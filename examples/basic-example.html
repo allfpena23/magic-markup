@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic Markup - Basic Example</title>
+    <link rel="stylesheet" href="../dist/magic-markup.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f4f8;
+        }
+        .page-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .page-header h1 {
+            color: #2563eb;
+            margin-bottom: 10px;
+        }
+        .page-header p {
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <h1>🪄 Magic Markup - Basic Example</h1>
+        <p>Simple demonstration of rendering JSON data</p>
+    </div>
+
+    <div id="container"></div>
+
+    <script src="../dist/magic-markup.js"></script>
+    <script>
+        // Sample data
+        const data = {
+            // Primitive values
+            requestId: "REQ-2024-001",
+            timestamp: "2024-01-14T12:30:00Z",
+            status: "success",
+            priority: "critical",
+            isActive: true,
+            retryCount: 3,
+            
+            // Single object
+            user: {
+                id: 12345,
+                name: "John Doe",
+                email: "john.doe@example.com",
+                role: "admin",
+                department: "Engineering"
+            },
+            
+            // Array of strings
+            tags: ["production", "urgent", "api", "backend"],
+            
+            // Array of objects
+            logs: [
+                {
+                    id: 1,
+                    timestamp: "2024-01-14T12:25:00Z",
+                    level: "info",
+                    message: "Request initiated",
+                    source: "api-gateway"
+                },
+                {
+                    id: 2,
+                    timestamp: "2024-01-14T12:26:30Z",
+                    level: "warning",
+                    message: "High latency detected",
+                    source: "database"
+                },
+                {
+                    id: 3,
+                    timestamp: "2024-01-14T12:28:15Z",
+                    level: "error",
+                    message: "Connection timeout",
+                    source: "external-api"
+                },
+                {
+                    id: 4,
+                    timestamp: "2024-01-14T12:29:00Z",
+                    level: "info",
+                    message: "Retry successful",
+                    source: "retry-handler"
+                },
+                {
+                    id: 5,
+                    timestamp: "2024-01-14T12:30:00Z",
+                    level: "success",
+                    message: "Request completed",
+                    source: "api-gateway"
+                }
+            ]
+        };
+
+        // Render with Magic Markup
+        MagicMarkup.render('#container', data, {
+            showStats: true,
+            showHeader: true,
+            buttons: {
+                primitive: [
+                    {
+                        name: 'Copy Value',
+                        className: 'mm-btn-primary',
+                        icon: '📋',
+                        handler: (data) => {
+                            navigator.clipboard.writeText(data.value);
+                            alert(`Copied "${data.value}" to clipboard!`);
+                        }
+                    }
+                ],
+                table: [
+                    {
+                        name: 'View',
+                        className: 'mm-btn-primary',
+                        icon: '👁️',
+                        handler: (row) => {
+                            alert(JSON.stringify(row, null, 2));
+                        }
+                    },
+                    {
+                        name: 'Copy',
+                        className: 'mm-btn-secondary',
+                        icon: '📋',
+                        handler: (row) => {
+                            navigator.clipboard.writeText(JSON.stringify(row));
+                            alert('Row data copied to clipboard!');
+                        }
+                    }
+                ],
+                card: [
+                    {
+                        name: 'Details',
+                        className: 'mm-btn-primary',
+                        handler: (item) => {
+                            console.log('Card item:', item);
+                            alert(`Log ID: ${item.id}\nLevel: ${item.level}\nMessage: ${item.message}`);
+                        }
+                    }
+                ]
+            },
+            onRender: () => {
+                console.log('Magic Markup rendered successfully!');
+            }
+        });
+    </script>
+</body>
+</html>

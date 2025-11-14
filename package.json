@@ -1,0 +1,46 @@
+{
+  "name": "magic-markup",
+  "version": "1.0.0",
+  "description": "Transform JSON data into beautiful, interactive HTML with zero configuration",
+  "main": "dist/magic-markup.js",
+  "style": "dist/magic-markup.css",
+  "scripts": {
+    "serve": "python3 -m http.server 8765",
+    "serve-win": "python -m http.server 8765"
+  },
+  "keywords": [
+    "json",
+    "html",
+    "converter",
+    "renderer",
+    "ui",
+    "table",
+    "card",
+    "accordion",
+    "visualization",
+    "data-display"
+  ],
+  "author": "Magic Markup Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/magic-markup.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/magic-markup/issues"
+  },
+  "homepage": "https://github.com/yourusername/magic-markup#readme",
+  "files": [
+    "dist/",
+    "src/",
+    "examples/",
+    "README.md",
+    "LICENSE"
+  ],
+  "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "semantic-release": "^22.0.0"
+  },
+  "dependencies": {}
+}

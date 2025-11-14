@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic Markup - Advanced Example</title>
+    <link rel="stylesheet" href="../dist/magic-markup.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f4f8;
+        }
+        .page-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .page-header h1 {
+            color: #2563eb;
+            margin-bottom: 10px;
+        }
+        .page-header p {
+            color: #64748b;
+        }
+        .controls {
+            max-width: 1400px;
+            margin: 0 auto 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .controls button {
+            margin: 5px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            background: #2563eb;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .controls button:hover {
+            background: #1d4ed8;
+        }
+        .controls button.secondary {
+            background: #64748b;
+        }
+        .controls button.secondary:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <h1>🪄 Magic Markup - Advanced Example</h1>
+        <p>Demonstration with custom buttons, API simulation, and dynamic updates</p>
+    </div>
+
+    <div class="controls">
+        <button onclick="loadFromFile()">📁 Load from JSON File</button>
+        <button onclick="simulateAPI()">🌐 Simulate API Call</button>
+        <button onclick="toggleStats()" class="secondary">📊 Toggle Stats</button>
+        <button onclick="toggleHeader()" class="secondary">🎨 Toggle Header</button>
+    </div>
+
+    <div id="container"></div>
+
+    <script src="../dist/magic-markup.js"></script>
+    <script>
+        let magicMarkupInstance;
+        let showStats = true;
+        let showHeader = true;
+
+        // Initial data
+        const initialData = {
+            environment: "production",
+            region: "us-east-1",
+            version: "2.5.1",
+            uptime: "99.99%",
+            
+            servers: [
+                {
+                    id: "srv-001",
+                    name: "web-server-1",
+                    status: "active",
+                    cpu: "45%",
+                    memory: "2.1GB / 4GB",
+                    requests: 15234
+                },
+                {
+                    id: "srv-002",
+                    name: "web-server-2",
+                    status: "active",
+                    cpu: "38%",
+                    memory: "1.8GB / 4GB",
+                    requests: 12891
+                },
+                {
+                    id: "srv-003",
+                    name: "api-server-1",
+                    status: "warning",
+                    cpu: "78%",
+                    memory: "3.5GB / 4GB",
+                    requests: 28456
+                },
+                {
+                    id: "srv-004",
+                    name: "db-server-1",
+                    status: "active",
+                    cpu: "52%",
+                    memory: "6.2GB / 8GB",
+                    requests: 45123
+                }
+            ]
+        };
+
+        // Render initial data
+        renderData(initialData);
+
+        function renderData(data) {
+            magicMarkupInstance = MagicMarkup.render('#container', data, {
+                showStats: showStats,
+                showHeader: showHeader,
+                buttons: {
+                    primitive: [
+                        {
+                            name: 'Copy',
+                            className: 'mm-btn-primary',
+                            icon: '📋',
+                            handler: (data) => {
+                                navigator.clipboard.writeText(data.value);
+                                showNotification(`Copied: ${data.value}`);
+                            }
+                        },
+                        {
+                            name: 'Edit',
+                            className: 'mm-btn-secondary',
+                            icon: '✏️',
+                            handler: (data) => {
+                                const newValue = prompt(`Edit ${data.label}:`, data.value);
+                                if (newValue !== null) {
+                                    showNotification(`Updated ${data.label} to: ${newValue}`);
+                                }
+                            }
+                        }
+                    ],
+                    table: [
+                        {
+                            name: 'Details',
+                            className: 'mm-btn-primary',
+                            icon: '🔍',
+                            handler: (server) => {
+                                alert(`Server Details:\n\n${JSON.stringify(server, null, 2)}`);
+                            }
+                        },
+                        {
+                            name: 'Restart',
+                            className: 'mm-btn-warning',
+                            icon: '🔄',
+                            handler: async (server, button) => {
+                                if (!confirm(`Restart ${server.name}?`)) return;
+                                
+                                button.textContent = '⏳ Restarting...';
+                                button.disabled = true;
+                                
+                                // Simulate API call
+                                await new Promise(resolve => setTimeout(resolve, 2000));
+                                
+                                button.textContent = '✓ Restarted';
+                                showNotification(`${server.name} restarted successfully`);
+                                
+                                setTimeout(() => {
+                                    button.textContent = '🔄 Restart';
+                                    button.disabled = false;
+                                }, 1500);
+                            }
+                        },
+                        {
+                            name: 'Stop',
+                            className: 'mm-btn-danger',
+                            icon: '⏹️',
+                            handler: async (server, button) => {
+                                if (!confirm(`Stop ${server.name}? This will affect service availability.`)) return;
+                                
+                                button.textContent = '⏳ Stopping...';
+                                button.disabled = true;
+                                
+                                await new Promise(resolve => setTimeout(resolve, 1500));
+                                
+                                button.textContent = '✓ Stopped';
+                                showNotification(`${server.name} stopped`);
+                                
+                                setTimeout(() => {
+                                    button.textContent = '⏹️ Stop';
+                                    button.disabled = false;
+                                }, 1500);
+                            }
+                        },
+                        {
+                            name: 'Logs',
+                            className: 'mm-btn-secondary',
+                            icon: '📄',
+                            handler: (server) => {
+                                console.log('Viewing logs for:', server.name);
+                                showNotification(`Opening logs for ${server.name}...`);
+                            }
+                        }
+                    ],
+                    card: [
+                        {
+                            name: 'Monitor',
+                            className: 'mm-btn-primary',
+                            icon: '📊',
+                            handler: (server) => {
+                                showNotification(`Monitoring ${server.name}...`);
+                            }
+                        },
+                        {
+                            name: 'Configure',
+                            className: 'mm-btn-secondary',
+                            icon: '⚙️',
+                            handler: (server) => {
+                                showNotification(`Opening configuration for ${server.name}...`);
+                            }
+                        }
+                    ]
+                },
+                onRender: () => {
+                    console.log('Magic Markup rendered!');
+                },
+                onError: (error) => {
+                    console.error('Render error:', error);
+                    showNotification('Error rendering data: ' + error.message, 'error');
+                }
+            });
+        }
+
+        function loadFromFile() {
+            showNotification('Loading data from file...');
+            
+            // Simulate loading from file
+            setTimeout(() => {
+                magicMarkupInstance.render('sample-data.json')
+                    .then(() => {
+                        showNotification('Data loaded successfully!', 'success');
+                    })
+                    .catch(error => {
+                        showNotification('Failed to load file: ' + error.message, 'error');
+                    });
+            }, 500);
+        }
+
+        function simulateAPI() {
+            showNotification('Fetching data from API...');
+            
+            // Simulate API call
+            setTimeout(() => {
+                const apiData = {
+                    apiVersion: "v2",
+                    timestamp: new Date().toISOString(),
+                    status: "success",
+                    
+                    metrics: {
+                        totalRequests: 1234567,
+                        successRate: "99.8%",
+                        avgResponseTime: "45ms",
+                        errorRate: "0.2%"
+                    },
+                    
+                    alerts: ["High CPU on srv-003", "Low disk space on srv-001"],
+                    
+                    recentEvents: [
+                        {
+                            id: 1,
+                            type: "deployment",
+                            message: "Version 2.5.1 deployed",
+                            timestamp: "2024-01-14T10:30:00Z",
+                            severity: "info"
+                        },
+                        {
+                            id: 2,
+                            type: "alert",
+                            message: "High memory usage detected",
+                            timestamp: "2024-01-14T11:15:00Z",
+                            severity: "warning"
+                        },
+                        {
+                            id: 3,
+                            type: "incident",
+                            message: "Database connection timeout",
+                            timestamp: "2024-01-14T11:45:00Z",
+                            severity: "critical"
+                        }
+                    ]
+                };
+                
+                renderData(apiData);
+                showNotification('API data loaded successfully!', 'success');
+            }, 1000);
+        }
+
+        function toggleStats() {
+            showStats = !showStats;
+            renderData(magicMarkupInstance.data || initialData);
+            showNotification(`Statistics ${showStats ? 'enabled' : 'disabled'}`);
+        }
+
+        function toggleHeader() {
+            showHeader = !showHeader;
+            renderData(magicMarkupInstance.data || initialData);
+            showNotification(`Header ${showHeader ? 'enabled' : 'disabled'}`);
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                background: ${type === 'error' ? '#ef4444' : type === 'success' ? '#10b981' : '#2563eb'};
+                color: white;
+                border-radius: 8px;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                z-index: 10000;
+                font-weight: 600;
+                animation: slideIn 0.3s ease-out;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Add animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
