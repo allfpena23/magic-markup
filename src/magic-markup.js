@@ -768,6 +768,173 @@
             instance.render(data);
             return instance;
         }
+
+        /**
+         * Set theme (light or dark)
+         */
+        static setTheme(theme) {
+            const root = document.documentElement;
+            if (theme === 'dark') {
+                root.setAttribute('data-mm-theme', 'dark');
+            } else {
+                root.removeAttribute('data-mm-theme');
+            }
+        }
+
+        /**
+         * Generate and apply custom theme from a primary color
+         */
+        static setCustomTheme(primaryColor) {
+            const theme = MagicMarkup.generateTheme(primaryColor);
+            MagicMarkup.applyTheme(theme);
+        }
+
+        /**
+         * Generate a complete theme from a primary color
+         */
+        static generateTheme(primaryColor) {
+            const hsl = MagicMarkup._hexToHSL(primaryColor);
+            
+            // Generate color palette
+            const theme = {
+                primary: primaryColor,
+                primaryHover: MagicMarkup._adjustLightness(hsl, -10),
+                secondary: MagicMarkup._rotateHue(hsl, 30, -20),
+                success: MagicMarkup._rotateHue(hsl, 120, 0),
+                error: MagicMarkup._rotateHue(hsl, -120, 0),
+                warning: MagicMarkup._rotateHue(hsl, 60, 0),
+                
+                // Backgrounds (very light versions)
+                bgPrimary: MagicMarkup._adjustLightness(hsl, 95, 5),
+                bgSecondary: MagicMarkup._adjustLightness(hsl, 97, 3),
+                bgTertiary: MagicMarkup._adjustLightness(hsl, 92, 8),
+                bgHover: MagicMarkup._adjustLightness(hsl, 88, 10),
+                
+                // Text colors
+                textPrimary: MagicMarkup._adjustLightness(hsl, 10, 90),
+                textSecondary: MagicMarkup._adjustLightness(hsl, 35, 60),
+                textMuted: MagicMarkup._adjustLightness(hsl, 55, 40),
+                
+                // Border
+                borderColor: MagicMarkup._adjustLightness(hsl, 85, 15)
+            };
+            
+            return theme;
+        }
+
+        /**
+         * Apply theme to document
+         */
+        static applyTheme(theme) {
+            const root = document.documentElement;
+            root.style.setProperty('--mm-primary-color', theme.primary);
+            root.style.setProperty('--mm-primary-hover', theme.primaryHover);
+            root.style.setProperty('--mm-secondary-color', theme.secondary);
+            root.style.setProperty('--mm-success-color', theme.success);
+            root.style.setProperty('--mm-error-color', theme.error);
+            root.style.setProperty('--mm-warning-color', theme.warning);
+            
+            root.style.setProperty('--mm-bg-primary', theme.bgPrimary);
+            root.style.setProperty('--mm-bg-secondary', theme.bgSecondary);
+            root.style.setProperty('--mm-bg-tertiary', theme.bgTertiary);
+            root.style.setProperty('--mm-bg-hover', theme.bgHover);
+            
+            root.style.setProperty('--mm-text-primary', theme.textPrimary);
+            root.style.setProperty('--mm-text-secondary', theme.textSecondary);
+            root.style.setProperty('--mm-text-muted', theme.textMuted);
+            
+            root.style.setProperty('--mm-border-color', theme.borderColor);
+        }
+
+        /**
+         * Convert hex color to HSL
+         */
+        static _hexToHSL(hex) {
+            // Remove # if present
+            hex = hex.replace('#', '');
+            
+            // Convert to RGB
+            const r = parseInt(hex.substring(0, 2), 16) / 255;
+            const g = parseInt(hex.substring(2, 4), 16) / 255;
+            const b = parseInt(hex.substring(4, 6), 16) / 255;
+            
+            const max = Math.max(r, g, b);
+            const min = Math.min(r, g, b);
+            let h, s, l = (max + min) / 2;
+            
+            if (max === min) {
+                h = s = 0; // achromatic
+            } else {
+                const d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                
+                switch (max) {
+                    case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+                    case g: h = ((b - r) / d + 2) / 6; break;
+                    case b: h = ((r - g) / d + 4) / 6; break;
+                }
+            }
+            
+            return {
+                h: Math.round(h * 360),
+                s: Math.round(s * 100),
+                l: Math.round(l * 100)
+            };
+        }
+
+        /**
+         * Convert HSL to hex
+         */
+        static _hslToHex(h, s, l) {
+            s /= 100;
+            l /= 100;
+            
+            const c = (1 - Math.abs(2 * l - 1)) * s;
+            const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+            const m = l - c / 2;
+            let r = 0, g = 0, b = 0;
+            
+            if (0 <= h && h < 60) {
+                r = c; g = x; b = 0;
+            } else if (60 <= h && h < 120) {
+                r = x; g = c; b = 0;
+            } else if (120 <= h && h < 180) {
+                r = 0; g = c; b = x;
+            } else if (180 <= h && h < 240) {
+                r = 0; g = x; b = c;
+            } else if (240 <= h && h < 300) {
+                r = x; g = 0; b = c;
+            } else if (300 <= h && h < 360) {
+                r = c; g = 0; b = x;
+            }
+            
+            const toHex = (n) => {
+                const hex = Math.round((n + m) * 255).toString(16);
+                return hex.length === 1 ? '0' + hex : hex;
+            };
+            
+            return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+        }
+
+        /**
+         * Adjust lightness of HSL color
+         */
+        static _adjustLightness(hsl, newLightness, saturationAdjust = 0) {
+            return MagicMarkup._hslToHex(
+                hsl.h,
+                Math.max(0, Math.min(100, hsl.s + saturationAdjust)),
+                Math.max(0, Math.min(100, newLightness))
+            );
+        }
+
+        /**
+         * Rotate hue and optionally adjust lightness
+         */
+        static _rotateHue(hsl, degrees, lightnessAdjust = 0) {
+            const newHue = (hsl.h + degrees + 360) % 360;
+            const newLightness = Math.max(0, Math.min(100, hsl.l + lightnessAdjust));
+            return MagicMarkup._hslToHex(newHue, hsl.s, newLightness);
+        }
     }
 
     // Export for different module systems

@@ -16,6 +16,36 @@ Magic Markup is a lightweight, powerful JavaScript library that converts JSON ob
 - 🎭 **Value Highlighting** - Automatic highlighting for booleans, severity levels
 - 📦 **Easy Integration** - Works with any framework or vanilla JS
 
+## 📸 Screenshots
+
+### Overview
+Magic Markup automatically renders JSON data with beautiful, color-coded values and interactive elements:
+
+![Magic Markup Overview](images/overview.png)
+
+*Primitive values with automatic highlighting for status levels (success, critical, etc.) and boolean values*
+
+### Table View
+Display arrays of objects in a clean, sortable table format with custom action buttons:
+
+![Table View](images/table-view.png)
+
+*Table view with color-coded severity levels (INFO, WARNING, ERROR, SUCCESS) and custom action buttons*
+
+### Card View
+Toggle to card layout for a more visual, mobile-friendly presentation:
+
+![Card View](images/card-view.png)
+
+*Card view showing the same data in an easy-to-scan card layout with action buttons*
+
+### Nested Objects & Accordions
+Nested objects are automatically rendered as expandable accordions:
+
+![Nested Objects](images/nested-objects.png)
+
+*Collapsible accordions for nested objects and arrays, keeping the interface clean and organized*
+
 ## 📦 Installation
 
 ### Option 1: Direct Download (Simplest)
@@ -321,11 +351,51 @@ MagicMarkup.render('#container', settings, {
 });
 ```
 
-## 🎨 Customization
+## 🎨 Theming & Customization
 
-### Custom Styling
+Magic Markup includes a powerful theming system with **3 ways to customize**:
 
-Override CSS variables to customize the theme:
+### 1. Built-in Themes
+
+**Light Theme (Default)**
+```javascript
+MagicMarkup.setTheme('light');
+```
+
+**Dark Theme**
+```html
+<!-- Include dark theme CSS -->
+<link rel="stylesheet" href="magic-markup.css">
+<link rel="stylesheet" href="magic-markup-dark.css">
+```
+```javascript
+MagicMarkup.setTheme('dark');
+```
+
+### 2. Custom Theme Generator 🎨
+
+Generate a complete theme from **any color** using color theory algorithms!
+
+```javascript
+// Purple theme
+MagicMarkup.setCustomTheme('#8b5cf6');
+
+// Green theme
+MagicMarkup.setCustomTheme('#10b981');
+
+// Your brand color
+MagicMarkup.setCustomTheme('#FF6B6B');
+```
+
+The generator automatically creates:
+- ✅ Complementary colors for success/error/warning
+- ✅ Properly contrasted backgrounds and text
+- ✅ Hover states and interactive elements
+- ✅ All semantic color variations
+
+### 3. CSS Variables Override
+
+Fine-tune specific colors:
 
 ```css
 :root {
@@ -334,6 +404,17 @@ Override CSS variables to customize the theme:
     --mm-text-primary: #your-text;
     /* ... more variables */
 }
+```
+
+### 📚 Complete Theme Documentation
+
+For detailed theming guide, examples, and API reference, see **[THEMES.md](THEMES.md)**
+
+### Interactive Theme Demo
+
+Try the live theme demo with color picker and presets:
+```bash
+open examples/theme-demo.html
 ```
 
 ### Hide Header/Stats

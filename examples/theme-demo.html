@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic Markup - Theme Demo</title>
+    <link rel="stylesheet" href="../src/magic-markup.css">
+    <link rel="stylesheet" href="../src/magic-markup-dark.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f4f8;
+            transition: background-color 0.3s ease;
+        }
+
+        body[data-mm-theme="dark"] {
+            background: #0f172a;
+        }
+
+        .theme-controls {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: white;
+            border-bottom: 2px solid #e2e8f0;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        body[data-mm-theme="dark"] .theme-controls {
+            background: #1e293b;
+            border-bottom-color: #475569;
+        }
+
+        .theme-controls h2 {
+            margin: 0 0 15px 0;
+            color: #2563eb;
+            font-size: 1.5rem;
+        }
+
+        body[data-mm-theme="dark"] .theme-controls h2 {
+            color: #60a5fa;
+        }
+
+        .theme-controls p {
+            margin: 0 0 20px 0;
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        body[data-mm-theme="dark"] .theme-controls p {
+            color: #cbd5e1;
+        }
+
+        .theme-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .theme-btn {
+            padding: 10px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            color: #0f172a;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+        }
+
+        .theme-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .theme-btn.active {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        body[data-mm-theme="dark"] .theme-btn {
+            background: #334155;
+            color: #f1f5f9;
+            border-color: #475569;
+        }
+
+        body[data-mm-theme="dark"] .theme-btn.active {
+            background: #60a5fa;
+            color: #0f172a;
+            border-color: #60a5fa;
+        }
+
+        .custom-theme-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        body[data-mm-theme="dark"] .custom-theme-section {
+            background: #0f172a;
+            border-color: #475569;
+        }
+
+        .custom-theme-section h3 {
+            margin: 0 0 10px 0;
+            color: #0f172a;
+            font-size: 1rem;
+        }
+
+        body[data-mm-theme="dark"] .custom-theme-section h3 {
+            color: #f1f5f9;
+        }
+
+        .color-picker-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .color-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .color-input input[type="color"] {
+            width: 50px;
+            height: 40px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .color-input input[type="text"] {
+            padding: 8px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.875rem;
+            width: 100px;
+        }
+
+        body[data-mm-theme="dark"] .color-input input {
+            background: #334155;
+            color: #f1f5f9;
+            border-color: #475569;
+        }
+
+        .preset-colors {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .preset-color {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .preset-color:hover {
+            transform: scale(1.1);
+            border-color: #0f172a;
+        }
+
+        body[data-mm-theme="dark"] .preset-color:hover {
+            border-color: #f1f5f9;
+        }
+
+        .content-wrapper {
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="theme-controls">
+        <h2>🎨 Magic Markup Theme Demo</h2>
+        <p>Try different themes and see how Magic Markup adapts!</p>
+        
+        <div class="theme-buttons">
+            <button class="theme-btn active" onclick="setTheme('light')">☀️ Light Theme</button>
+            <button class="theme-btn" onclick="setTheme('dark')">🌙 Dark Theme</button>
+        </div>
+
+        <div class="custom-theme-section">
+            <h3>🎨 Custom Theme Generator</h3>
+            <p style="margin-bottom: 15px; font-size: 0.8125rem;">Pick a color and watch Magic Markup generate a complete theme!</p>
+            
+            <div class="color-picker-group">
+                <div class="color-input">
+                    <input type="color" id="customColor" value="#8b5cf6" onchange="updateCustomTheme()">
+                    <input type="text" id="customColorHex" value="#8b5cf6" onchange="updateFromHex()">
+                    <button class="theme-btn" onclick="applyCustomTheme()">Apply Custom Theme</button>
+                </div>
+            </div>
+
+            <p style="margin: 15px 0 10px 0; font-size: 0.8125rem; font-weight: 600;">Quick Presets:</p>
+            <div class="preset-colors">
+                <div class="preset-color" style="background: #8b5cf6;" onclick="applyPreset('#8b5cf6')" title="Purple"></div>
+                <div class="preset-color" style="background: #10b981;" onclick="applyPreset('#10b981')" title="Green"></div>
+                <div class="preset-color" style="background: #f59e0b;" onclick="applyPreset('#f59e0b')" title="Orange"></div>
+                <div class="preset-color" style="background: #ef4444;" onclick="applyPreset('#ef4444')" title="Red"></div>
+                <div class="preset-color" style="background: #06b6d4;" onclick="applyPreset('#06b6d4')" title="Cyan"></div>
+                <div class="preset-color" style="background: #ec4899;" onclick="applyPreset('#ec4899')" title="Pink"></div>
+                <div class="preset-color" style="background: #6366f1;" onclick="applyPreset('#6366f1')" title="Indigo"></div>
+                <div class="preset-color" style="background: #14b8a6;" onclick="applyPreset('#14b8a6')" title="Teal"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-wrapper">
+        <div id="container"></div>
+    </div>
+
+    <script src="../src/magic-markup.js"></script>
+    <script>
+        // Sample data
+        const data = {
+            requestId: "REQ-2024-001",
+            timestamp: "2024-01-14T12:30:00Z",
+            status: "success",
+            priority: "critical",
+            isActive: true,
+            retryCount: 3,
+            
+            user: {
+                id: 12345,
+                name: "John Doe",
+                email: "john.doe@example.com",
+                role: "admin",
+                department: "Engineering"
+            },
+            
+            tags: ["production", "urgent", "api", "backend"],
+            
+            logs: [
+                {
+                    id: 1,
+                    timestamp: "2024-01-14T12:25:00Z",
+                    level: "info",
+                    message: "Request initiated",
+                    source: "api-gateway"
+                },
+                {
+                    id: 2,
+                    timestamp: "2024-01-14T12:26:30Z",
+                    level: "warning",
+                    message: "High latency detected",
+                    source: "database"
+                },
+                {
+                    id: 3,
+                    timestamp: "2024-01-14T12:28:15Z",
+                    level: "error",
+                    message: "Connection timeout",
+                    source: "external-api"
+                },
+                {
+                    id: 4,
+                    timestamp: "2024-01-14T12:29:00Z",
+                    level: "info",
+                    message: "Retry successful",
+                    source: "retry-handler"
+                },
+                {
+                    id: 5,
+                    timestamp: "2024-01-14T12:30:00Z",
+                    level: "success",
+                    message: "Request completed",
+                    source: "api-gateway"
+                }
+            ]
+        };
+
+        // Render Magic Markup
+        MagicMarkup.render('#container', data, {
+            showStats: true,
+            showHeader: true,
+            buttons: {
+                table: [
+                    {
+                        name: 'View',
+                        className: 'mm-btn-primary',
+                        icon: '👁️',
+                        handler: (row) => {
+                            alert(JSON.stringify(row, null, 2));
+                        }
+                    }
+                ]
+            }
+        });
+
+        // Theme switching functions
+        function setTheme(theme) {
+            // Update button states
+            document.querySelectorAll('.theme-buttons .theme-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Apply theme
+            MagicMarkup.setTheme(theme);
+            document.body.setAttribute('data-mm-theme', theme === 'dark' ? 'dark' : '');
+        }
+
+        function updateCustomTheme() {
+            const color = document.getElementById('customColor').value;
+            document.getElementById('customColorHex').value = color;
+        }
+
+        function updateFromHex() {
+            const hex = document.getElementById('customColorHex').value;
+            document.getElementById('customColor').value = hex;
+        }
+
+        function applyPreset(color) {
+            document.getElementById('customColor').value = color;
+            document.getElementById('customColorHex').value = color;
+            applyCustomTheme();
+        }
+
+        function applyCustomTheme() {
+            const color = document.getElementById('customColor').value;
+            
+            // Remove dark theme if active
+            document.body.removeAttribute('data-mm-theme');
+            document.querySelectorAll('.theme-buttons .theme-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Apply custom theme
+            MagicMarkup.setCustomTheme(color);
+            
+            console.log('Custom theme applied with color:', color);
+            console.log('Generated theme:', MagicMarkup.generateTheme(color));
+        }
+
+        // Sync color inputs
+        document.getElementById('customColor').addEventListener('input', updateCustomTheme);
+        document.getElementById('customColorHex').addEventListener('input', updateFromHex);
+    </script>
+</body>
+</html>
