@@ -1,1 +1,6 @@
 /node_modules
+
+# test data
+/data
+examples/sentinel-test.html
+/version-01

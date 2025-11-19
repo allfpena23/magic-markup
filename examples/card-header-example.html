@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic Markup - Card Header Customization Example</title>
+    <link rel="stylesheet" href="../src/magic-markup.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f4f8;
+        }
+        .page-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .page-header h1 {
+            color: #2563eb;
+            margin-bottom: 10px;
+        }
+        .page-header p {
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <h1>🪄 Magic Markup - Card Header Customization</h1>
+        <p>Demonstration of custom card headers using the card.header option</p>
+    </div>
+
+    <div id="container"></div>
+
+    <script src="../src/magic-markup.js"></script>
+    <script>
+        // Sample data with users
+        const data = {
+            users: [
+                {
+                    id: 1,
+                    name: "Alice Johnson",
+                    email: "alice@example.com",
+                    role: "admin",
+                    status: "active",
+                    lastLogin: "2024-01-14T10:30:00Z"
+                },
+                {
+                    id: 2,
+                    name: "Bob Smith",
+                    email: "bob@example.com",
+                    role: "user",
+                    status: "active",
+                    lastLogin: "2024-01-13T15:45:00Z"
+                },
+                {
+                    id: 3,
+                    name: "Charlie Davis",
+                    email: "charlie@example.com",
+                    role: "moderator",
+                    status: "inactive",
+                    lastLogin: "2024-01-10T08:20:00Z"
+                },
+                {
+                    id: 4,
+                    name: "Diana Prince",
+                    email: "diana@example.com",
+                    role: "admin",
+                    status: "active",
+                    lastLogin: "2024-01-14T12:00:00Z"
+                }
+            ]
+        };
+
+        // Render with custom card headers showing the 'name' field
+        MagicMarkup.render('#container', data, {
+            showStats: true,
+            showHeader: true,
+            card: {
+                header: "name"  // Card headers will show user names instead of "Item 1", "Item 2", etc.
+            },
+            buttons: {
+                table: [
+                    {
+                        name: 'Edit',
+                        className: 'mm-btn-primary',
+                        handler: (row) => {
+                            alert(`Edit user: ${row.name}\nEmail: ${row.email}`);
+                        }
+                    }
+                ],
+                card: [
+                    {
+                        name: 'View Details',
+                        className: 'mm-btn-primary',
+                        handler: (item) => {
+                            console.log('User details:', item);
+                            alert(`User: ${item.name}\nRole: ${item.role}\nStatus: ${item.status}`);
+                        }
+                    }
+                ]
+            },
+            onRender: () => {
+                console.log('Magic Markup rendered with custom card headers!');
+                console.log('Switch to Card View to see the custom headers in action.');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -396,10 +396,11 @@
 .mm-card-header {
     font-size: 0.875rem;
     font-weight: 600;
-    color: var(--mm-text-primary);
+    color: var(--mm-primary-color);
     margin-bottom: var(--mm-spacing-sm);
     padding-bottom: var(--mm-spacing-xs);
     border-bottom: 1px solid var(--mm-border-color);
+    text-decoration: underline;
 }
 
 .mm-card-body {
@@ -415,7 +416,8 @@
 .mm-card-row .mm-key {
     font-weight: 600;
     color: var(--mm-text-secondary);
-    min-width: 150px;
+    min-width: 180px;
+    flex-shrink: 0;
 }
 
 .mm-card-row .mm-value {
@@ -431,6 +433,70 @@
     justify-content: center;
     background: var(--mm-bg-secondary);
     margin: var(--mm-spacing-sm) calc(-1 * var(--mm-spacing-md)) calc(-1 * var(--mm-spacing-sm));
+}
+
+/* ============================================
+   Nested Objects
+   ============================================ */
+.mm-nested-object {
+    margin: var(--mm-spacing-sm) 0;
+    border: 1px solid var(--mm-border-color);
+    border-radius: var(--mm-radius-sm);
+    background: var(--mm-bg-secondary);
+    padding: var(--mm-spacing-sm);
+}
+
+.mm-nested-header {
+    font-weight: 600;
+    color: var(--mm-primary-color);
+    margin-bottom: var(--mm-spacing-sm);
+    font-size: 0.8125rem;
+    padding: var(--mm-spacing-xs) var(--mm-spacing-sm);
+    background: var(--mm-bg-tertiary);
+    border-radius: var(--mm-radius-sm);
+    border-bottom: 1px solid var(--mm-border-color);
+    display: flex;
+    align-items: center;
+    gap: var(--mm-spacing-xs);
+    text-decoration: underline;
+}
+
+/* Folder icon for nested headers - To remove, comment out the ::before block below */
+.mm-nested-header::before {
+    content: '📁';
+    font-size: 0.875rem;
+    /* To remove folder icon, comment out the line above */
+}
+
+.mm-nested-object .mm-card {
+    border: none;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+}
+
+.mm-nested-object .mm-card-body {
+    padding: var(--mm-spacing-xs) 0;
+}
+
+/* Tree-line connectors for nested object rows */
+.mm-nested-object .mm-card-row {
+    padding: var(--mm-spacing-xs) var(--mm-spacing-sm);
+    position: relative;
+    padding-left: 20px;
+}
+
+.mm-nested-object .mm-card-row::before {
+    content: '├─';
+    position: absolute;
+    left: 0;
+    color: var(--mm-text-muted);
+    font-family: var(--mm-font-mono);
+    font-size: 0.75rem;
+}
+
+.mm-nested-object .mm-card-row:last-child::before {
+    content: '└─';
 }
 
 /* ============================================
@@ -544,6 +610,26 @@
     font-size: 0.75rem;
     font-weight: 500;
     white-space: nowrap;
+}
+
+/* ============================================
+   Links
+   ============================================ */
+.mm-link {
+    color: var(--mm-primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all var(--mm-transition);
+    border-bottom: 1px solid transparent;
+}
+
+.mm-link:hover {
+    color: var(--mm-primary-hover);
+    border-bottom-color: var(--mm-primary-hover);
+}
+
+.mm-link:visited {
+    color: #7c3aed;
 }
 
 /* ============================================

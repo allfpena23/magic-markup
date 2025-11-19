@@ -1,0 +1,118 @@
+/**
+ * Magic Markup - Dark Theme
+ * Version: 1.0.0
+ * A modern dark theme with vibrant accents
+ */
+
+/* ============================================
+   Dark Theme CSS Variables
+   ============================================ */
+:root[data-mm-theme="dark"],
+.mm-theme-dark {
+    --mm-primary-color: #60a5fa;
+    --mm-primary-hover: #3b82f6;
+    --mm-secondary-color: #94a3b8;
+    --mm-success-color: #34d399;
+    --mm-error-color: #f87171;
+    --mm-warning-color: #fbbf24;
+    
+    --mm-bg-primary: #1e293b;
+    --mm-bg-secondary: #0f172a;
+    --mm-bg-tertiary: #334155;
+    --mm-bg-hover: #475569;
+    
+    --mm-text-primary: #f1f5f9;
+    --mm-text-secondary: #cbd5e1;
+    --mm-text-muted: #94a3b8;
+    
+    --mm-border-color: #475569;
+    
+    --mm-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    --mm-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+    --mm-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
+/* ============================================
+   Dark Theme Specific Overrides
+   ============================================ */
+
+/* Accordion active state for dark theme */
+:root[data-mm-theme="dark"] .mm-accordion-section.mm-active .mm-accordion-header,
+.mm-theme-dark .mm-accordion-section.mm-active .mm-accordion-header {
+    background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+}
+
+/* Value highlighting adjustments for dark theme */
+:root[data-mm-theme="dark"] .mm-value-severity-critical,
+:root[data-mm-theme="dark"] .mm-value-severity-error,
+.mm-theme-dark .mm-value-severity-critical,
+.mm-theme-dark .mm-value-severity-error {
+    background: #dc2626 !important;
+    color: #fef2f2 !important;
+}
+
+:root[data-mm-theme="dark"] .mm-value-severity-warning,
+.mm-theme-dark .mm-value-severity-warning {
+    background: #f59e0b !important;
+    color: #fef3c7 !important;
+}
+
+:root[data-mm-theme="dark"] .mm-value-severity-info,
+.mm-theme-dark .mm-value-severity-info {
+    background: #3b82f6 !important;
+    color: #dbeafe !important;
+}
+
+:root[data-mm-theme="dark"] .mm-value-severity-success,
+.mm-theme-dark .mm-value-severity-success {
+    background: #10b981 !important;
+    color: #d1fae5 !important;
+}
+
+:root[data-mm-theme="dark"] .mm-value-boolean-true,
+.mm-theme-dark .mm-value-boolean-true {
+    background: #064e3b !important;
+    color: #6ee7b7 !important;
+}
+
+:root[data-mm-theme="dark"] .mm-value-boolean-false,
+.mm-theme-dark .mm-value-boolean-false {
+    background: #7f1d1d !important;
+    color: #fca5a5 !important;
+}
+
+/* Selected state for dark theme */
+:root[data-mm-theme="dark"] .mm-key-value-pair.mm-selected,
+.mm-theme-dark .mm-key-value-pair.mm-selected {
+    background-color: #1e3a8a;
+    border-left-color: var(--mm-primary-color);
+}
+
+/* Error state for dark theme */
+:root[data-mm-theme="dark"] .mm-error,
+.mm-theme-dark .mm-error {
+    background: #7f1d1d;
+    border-color: var(--mm-error-color);
+}
+
+:root[data-mm-theme="dark"] .mm-error h3,
+.mm-theme-dark .mm-error h3 {
+    color: var(--mm-error-color);
+}
+
+:root[data-mm-theme="dark"] .mm-error p,
+.mm-theme-dark .mm-error p {
+    color: #fca5a5;
+}
+
+/* Button hover states optimized for dark theme */
+:root[data-mm-theme="dark"] .mm-btn-secondary,
+.mm-theme-dark .mm-btn-secondary {
+    background: #64748b;
+    border-color: #64748b;
+}
+
+:root[data-mm-theme="dark"] .mm-btn-secondary:hover:not(:disabled),
+.mm-theme-dark .mm-btn-secondary:hover:not(:disabled) {
+    background: #94a3b8;
+}

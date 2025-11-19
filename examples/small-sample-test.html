@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic Markup - Small Sample Test</title>
+    <link rel="stylesheet" href="../src/magic-markup.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f4f8;
+        }
+        .page-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .page-header h1 {
+            color: #2563eb;
+            margin-bottom: 10px;
+        }
+        .page-header p {
+            color: #64748b;
+        }
+        .info-box {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .info-box h3 {
+            margin-top: 0;
+            color: #1e293b;
+        }
+        .info-box ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .info-box li {
+            color: #475569;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <h1>🪄 Magic Markup - Small Sample Test</h1>
+        <p>Testing with WebLogic Server Instance Data</p>
+    </div>
+
+    <div class="info-box">
+        <h3>📊 About This Test</h3>
+        <ul>
+            <li><strong>Data Source:</strong> data/small_sample.json</li>
+            <li><strong>Records:</strong> 3 WebLogic server instances</li>
+            <li><strong>Features:</strong> Nested objects (sentinelStrategy), arrays (clusters), multiple data types</li>
+            <li><strong>View Modes:</strong> Toggle between Table and Card views</li>
+        </ul>
+    </div>
+
+    <div id="container"></div>
+
+    <script src="../src/magic-markup.js"></script>
+    <script>
+        // Render the small_sample.json data with Magic Markup
+        MagicMarkup.render('#container', '../data/small_sample.json', {        
+            showStats: true,
+            showHeader: true,
+            card: {
+                header: "name"  // Use instance name as card header
+            },
+            buttons: {
+                table: [
+                    {
+                        name: 'Open Console',
+                        className: 'mm-btn-primary',
+                        icon: '🌐',
+                        handler: (row) => {
+                            if (row.consoleUrl) {
+                                window.open(row.consoleUrl, '_blank');
+                            } else {
+                                alert('No console URL available');
+                            }
+                        }
+                    },
+                    {
+                        name: 'Copy Details',
+                        className: 'mm-btn-secondary',
+                        icon: '📋',
+                        handler: (row) => {
+                            const details = `Instance: ${row.name}\nFamily: ${row.family}\nDatacenter: ${row.datacenter}\nHost: ${row.host}\nPort: ${row.port}\nConsole: ${row.consoleUrl}`;
+                            navigator.clipboard.writeText(details).then(() => {
+                                alert('Instance details copied to clipboard!');
+                            }).catch(err => {
+                                console.error('Failed to copy:', err);
+                                alert('Failed to copy to clipboard');
+                            });
+                        }
+                    },
+                    {
+                        name: 'View Strategy',
+                        className: 'mm-btn-info',
+                        icon: '⚙️',
+                        handler: (row) => {
+                            if (row.sentinelStrategy) {
+                                const strategy = JSON.stringify(row.sentinelStrategy, null, 2);
+                                console.log('Sentinel Strategy:', row.sentinelStrategy);
+                                alert(`Sentinel Strategy for ${row.name}:\n\nClusters: ${row.sentinelStrategy.clusters?.length || 0}\nHealth State Thresholds: ${row.sentinelStrategy.health_state_thresholds ? 'Configured' : 'Not configured'}\n\nSee console for full details.`);
+                            } else {
+                                alert('No sentinel strategy configured');
+                            }
+                        }
+                    }
+                ],
+                card: [
+                    {
+                        name: 'Open Console',
+                        className: 'mm-btn-primary',
+                        icon: '🌐',
+                        handler: (item) => {
+                            if (item.consoleUrl) {
+                                window.open(item.consoleUrl, '_blank');
+                            } else {
+                                alert('No console URL available');
+                            }
+                        }
+                    },
+                    {
+                        name: 'Copy Details',
+                        className: 'mm-btn-secondary',
+                        icon: '📋',
+                        handler: (item) => {
+                            const details = `Instance: ${item.name}\nFamily: ${item.family}\nDatacenter: ${item.datacenter}\nHost: ${item.host}\nPort: ${item.port}\nConsole: ${item.consoleUrl}`;
+                            navigator.clipboard.writeText(details).then(() => {
+                                alert('Instance details copied to clipboard!');
+                            }).catch(err => {
+                                console.error('Failed to copy:', err);
+                                alert('Failed to copy to clipboard');
+                            });
+                        }
+                    },
+                    {
+                        name: 'View Strategy',
+                        className: 'mm-btn-info',
+                        icon: '⚙️',
+                        handler: (item) => {
+                            if (item.sentinelStrategy) {
+                                console.log('Sentinel Strategy:', item.sentinelStrategy);
+                                alert(`Sentinel Strategy for ${item.name}:\n\nClusters: ${item.sentinelStrategy.clusters?.length || 0}\nHealth State Thresholds: ${item.sentinelStrategy.health_state_thresholds ? 'Configured' : 'Not configured'}\n\nSee console for full details.`);
+                            } else {
+                                alert('No sentinel strategy configured');
+                            }
+                        }
+                    }
+                ]
+            },
+            onRender: () => {
+                console.log('✅ Magic Markup rendered successfully!');
+                console.log('📊 Data loaded from: data/small_sample.json');
+            },
+            onError: (error) => {
+                console.error('❌ Error rendering Magic Markup:', error);
+                alert('Failed to load data. Please check the console for details.');
+            }
+        });
+    </script>
+</body>
+</html>

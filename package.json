@@ -5,6 +5,9 @@
   "main": "dist/magic-markup.js",
   "style": "dist/magic-markup.css",
   "scripts": {
+    "build": "node build.js",
+    "watch": "chokidar \"src/magic-markup.js\" \"src/magic-markup.css\" \"src/magic-markup-dark.css\" -c \"npm run build\"",
+    "dev": "npm run build && npm run watch",
     "serve": "python3 -m http.server 8765",
     "serve-win": "python -m http.server 8765"
   },
@@ -40,7 +43,11 @@
   "devDependencies": {
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
-    "semantic-release": "^22.0.0"
+    "clean-css-cli": "^5.6.3",
+    "semantic-release": "^22.0.0",
+    "terser": "^5.44.1"
   },
-  "dependencies": {}
+  "dependencies": {
+    "chokidar-cli": "^3.0.0"
+  }
 }
