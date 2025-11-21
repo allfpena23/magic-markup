@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic Markup - Pagination Example</title>
+    <link rel="stylesheet" href="../src/magic-markup.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f4f8;
+        }
+        .page-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .page-header h1 {
+            color: #2563eb;
+            margin-bottom: 10px;
+        }
+        .page-header p {
+            color: #64748b;
+            font-size: 1.1em;
+        }
+        .demo-section {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .demo-section h2 {
+            color: #1e293b;
+            margin-top: 0;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+        .demo-section h3 {
+            color: #475569;
+            margin-top: 20px;
+        }
+        .demo-description {
+            background: #f8fafc;
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .demo-description code {
+            background: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        .code-block .keyword { color: #c792ea; }
+        .code-block .string { color: #c3e88d; }
+        .code-block .number { color: #f78c6c; }
+        .code-block .comment { color: #546e7a; font-style: italic; }
+        
+        /* Enhanced Pagination Styles */
+        .mm-pagination-container {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+        .mm-pagination-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .mm-pagination-info {
+            color: #64748b;
+            font-size: 0.9em;
+        }
+        .mm-pagination-buttons {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .mm-pagination-btn {
+            padding: 6px 12px;
+            border: 1px solid #cbd5e1;
+            background: white;
+            color: #475569;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.2s;
+        }
+        .mm-pagination-btn:hover:not(:disabled) {
+            background: #f1f5f9;
+            border-color: #94a3b8;
+        }
+        .mm-pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .mm-pagination-btn.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        .mm-pagination-btn.active:hover {
+            background: #2563eb;
+            border-color: #2563eb;
+        }
+        .mm-pagination-select {
+            padding: 6px 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            background: white;
+            color: #475569;
+            font-size: 0.9em;
+            cursor: pointer;
+        }
+        .mm-pagination-label {
+            color: #64748b;
+            font-size: 0.9em;
+            margin-right: 8px;
+        }
+        .mm-page-numbers {
+            display: flex;
+            gap: 3px;
+        }
+        .mm-pagination-ellipsis {
+            padding: 6px 8px;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <h1>🪄 Magic Markup - Pagination Examples</h1>
+        <p>Complete guide to implementing pagination in your projects</p>
+    </div>
+
+    <!-- Demo 1: Basic Built-in Pagination -->
+    <div class="demo-section">
+        <h2>📄 Demo 1: Basic Built-in Pagination</h2>
+        <div class="demo-description">
+            <p><strong>Simple pagination using Magic Markup's built-in feature.</strong></p>
+            <p>This shows the first <code>itemsPerPage</code> items with a simple info message. No navigation controls.</p>
+        </div>
+        <div class="code-block">
+<span class="keyword">MagicMarkup</span>.render(<span class="string">'#container1'</span>, data, {
+    card: {
+        products: {
+            pagination: {
+                enabled: <span class="keyword">true</span>,
+                itemsPerPage: <span class="number">5</span>
+            }
+        }
+    }
+});
+        </div>
+        <div id="container1"></div>
+    </div>
+
+    <!-- Demo 2: Enhanced Pagination with Controls -->
+    <div class="demo-section">
+        <h2>🎯 Demo 2: Enhanced Pagination with Full Controls</h2>
+        <div class="demo-description">
+            <p><strong>Advanced pagination with navigation controls using a custom renderer.</strong></p>
+            <p>Features: Previous/Next buttons, page numbers, items per page selector, and page info.</p>
+        </div>
+        <div class="code-block">
+<span class="comment">// Register the enhanced pagination renderer</span>
+<span class="keyword">const</span> paginationRenderer = createPaginationRenderer({
+    itemsPerPage: <span class="number">10</span>,
+    showPageNumbers: <span class="keyword">true</span>,
+    showItemsPerPageSelector: <span class="keyword">true</span>
+});
+
+magicMarkup.registerRenderer(<span class="string">'users'</span>, paginationRenderer);
+        </div>
+        <div id="container2"></div>
+    </div>
+
+    <!-- Demo 3: Multiple Paginated Arrays -->
+    <div class="demo-section">
+        <h2>📊 Demo 3: Multiple Paginated Arrays</h2>
+        <div class="demo-description">
+            <p><strong>Different pagination settings for different data types.</strong></p>
+            <p>Shows how to configure pagination independently for multiple arrays in the same dataset.</p>
+        </div>
+        <div id="container3"></div>
+    </div>
+
+    <!-- Demo 4: Integration Guide -->
+    <div class="demo-section">
+        <h2>📚 Integration Guide</h2>
+        <h3>Step 1: Include Magic Markup</h3>
+        <div class="code-block">
+<span class="keyword">&lt;link</span> rel=<span class="string">"stylesheet"</span> href=<span class="string">"path/to/magic-markup.css"</span><span class="keyword">&gt;</span>
+<span class="keyword">&lt;script</span> src=<span class="string">"path/to/magic-markup.js"</span><span class="keyword">&gt;&lt;/script&gt;</span>
+        </div>
+
+        <h3>Step 2: Create Enhanced Pagination Renderer</h3>
+        <div class="demo-description">
+            <p>Copy the <code>createPaginationRenderer</code> function from this example (see source code).</p>
+        </div>
+
+        <h3>Step 3: Use in Your Project</h3>
+        <div class="code-block">
+<span class="comment">// Initialize Magic Markup</span>
+<span class="keyword">const</span> magicMarkup = <span class="keyword">new</span> MagicMarkup(<span class="string">'#container'</span>);
+
+<span class="comment">// Create and register pagination renderer</span>
+<span class="keyword">const</span> usersPagination = createPaginationRenderer({
+    itemsPerPage: <span class="number">10</span>,
+    showPageNumbers: <span class="keyword">true</span>,
+    showItemsPerPageSelector: <span class="keyword">true</span>
+});
+
+magicMarkup.registerRenderer(<span class="string">'users'</span>, usersPagination);
+
+<span class="comment">// Render your data</span>
+magicMarkup.render(yourData);
+        </div>
+
+        <h3>Configuration Options</h3>
+        <div class="code-block">
+{
+    itemsPerPage: <span class="number">10</span>,              <span class="comment">// Items per page (default: 10)</span>
+    showPageNumbers: <span class="keyword">true</span>,         <span class="comment">// Show page number buttons (default: true)</span>
+    maxPageButtons: <span class="number">5</span>,             <span class="comment">// Max page buttons to show (default: 5)</span>
+    showItemsPerPageSelector: <span class="keyword">true</span>, <span class="comment">// Show items per page dropdown (default: true)</span>
+    itemsPerPageOptions: [<span class="number">5</span>, <span class="number">10</span>, <span class="number">25</span>, <span class="number">50</span>], <span class="comment">// Options for selector</span>
+    viewMode: <span class="string">'table'</span>              <span class="comment">// 'table', 'cards', or null for toggle (default: null)</span>
+}
+        </div>
+    </div>
+
+    <script src="../src/magic-markup.js"></script>
+    <script>
+        // ============================================
+        // ENHANCED PAGINATION RENDERER
+        // ============================================
+        
+        /**
+         * Creates an enhanced pagination renderer with full controls
+         * @param {Object} config - Configuration options
+         * @returns {Object} Renderer object for Magic Markup
+         */
+        function createPaginationRenderer(config = {}) {
+            const defaults = {
+                itemsPerPage: 10,
+                showPageNumbers: true,
+                maxPageButtons: 5,
+                showItemsPerPageSelector: true,
+                itemsPerPageOptions: [5, 10, 25, 50, 100],
+                viewMode: null // null = toggle, 'table' = table only, 'cards' = cards only
+            };
+            
+            const settings = { ...defaults, ...config };
+            
+            return {
+                currentPage: 1,
+                itemsPerPage: settings.itemsPerPage,
+                viewMode: settings.viewMode || 'table',
+                
+                render: function(key, data, label, utils) {
+                    const container = document.createElement('div');
+                    container.className = 'mm-pagination-wrapper';
+                    
+                    // Create view toggle if viewMode is null
+                    if (settings.viewMode === null) {
+                        const toggleDiv = document.createElement('div');
+                        toggleDiv.className = 'mm-view-toggle';
+                        
+                        const tableBtn = document.createElement('button');
+                        tableBtn.className = 'mm-toggle-button' + (this.viewMode === 'table' ? ' mm-active' : '');
+                        tableBtn.textContent = 'Table View';
+                        
+                        const cardBtn = document.createElement('button');
+                        cardBtn.className = 'mm-toggle-button' + (this.viewMode === 'cards' ? ' mm-active' : '');
+                        cardBtn.textContent = 'Card View';
+                        
+                        toggleDiv.appendChild(tableBtn);
+                        toggleDiv.appendChild(cardBtn);
+                        container.appendChild(toggleDiv);
+                        
+                        // Toggle event listeners
+                        tableBtn.addEventListener('click', () => {
+                            this.viewMode = 'table';
+                            this.renderPage(container, data, key, utils);
+                        });
+                        
+                        cardBtn.addEventListener('click', () => {
+                            this.viewMode = 'cards';
+                            this.renderPage(container, data, key, utils);
+                        });
+                    }
+                    
+                    // Initial render
+                    this.renderPage(container, data, key, utils);
+                    
+                    return container;
+                },
+                
+                renderPage: function(container, data, key, utils) {
+                    // Remove existing content and pagination
+                    const existingContent = container.querySelector('.mm-paginated-content');
+                    const existingPagination = container.querySelector('.mm-pagination-container');
+                    if (existingContent) existingContent.remove();
+                    if (existingPagination) existingPagination.remove();
+                    
+                    // Update toggle buttons if they exist
+                    const toggleButtons = container.querySelectorAll('.mm-toggle-button');
+                    toggleButtons.forEach(btn => {
+                        btn.classList.remove('mm-active');
+                        if ((btn.textContent.includes('Table') && this.viewMode === 'table') ||
+                            (btn.textContent.includes('Card') && this.viewMode === 'cards')) {
+                            btn.classList.add('mm-active');
+                        }
+                    });
+                    
+                    // Calculate pagination
+                    const totalItems = data.length;
+                    const totalPages = Math.ceil(totalItems / this.itemsPerPage);
+                    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+                    const endIndex = Math.min(startIndex + this.itemsPerPage, totalItems);
+                    const pageData = data.slice(startIndex, endIndex);
+                    
+                    // Create content container
+                    const contentDiv = document.createElement('div');
+                    contentDiv.className = 'mm-paginated-content';
+                    
+                    // Render based on view mode
+                    if (this.viewMode === 'table') {
+                        const tableView = this.createTableView(pageData, key, utils);
+                        contentDiv.appendChild(tableView);
+                    } else {
+                        const cardView = this.createCardView(pageData, key, utils);
+                        contentDiv.appendChild(cardView);
+                    }
+                    
+                    container.appendChild(contentDiv);
+                    
+                    // Create pagination controls
+                    const paginationDiv = this.createPaginationControls(
+                        totalItems, 
+                        totalPages, 
+                        startIndex, 
+                        endIndex,
+                        container,
+                        data,
+                        key,
+                        utils
+                    );
+                    
+                    container.appendChild(paginationDiv);
+                },
+                
+                createPagin

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic Markup - Custom Pagination Renderer Demo</title>
+    <link rel="stylesheet" href="../src/magic-markup.css">
+    <link rel="stylesheet" href="../src/renderers/pagination-renderer.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+        .page-header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        .page-header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .demo-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .demo-section h2 {
+            color: #1e293b;
+            margin-top: 0;
+            border-bottom: 3px solid #3b82f6;
+            padding-bottom: 15px;
+            font-size: 1.8em;
+        }
+        .demo-description {
+            background: #f0f9ff;
+            border-left: 4px solid #3b82f6;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 6px;
+        }
+        .demo-description h3 {
+            margin-top: 0;
+            color: #1e40af;
+        }
+        .demo-description code {
+            background: #dbeafe;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #1e40af;
+        }
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .feature-item {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 3px solid #3b82f6;
+        }
+        .feature-item strong {
+            color: #1e293b;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+        .code-block .comment { color: #94a3b8; }
+        .code-block .keyword { color: #c792ea; }
+        .code-block .string { color: #c3e88d; }
+        .code-block .number { color: #f78c6c; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <h1>🚀 Custom Pagination Renderer</h1>
+            <p>Full-featured pagination with navigation controls</p>
+        </div>
+
+        <!-- Demo 1: Basic Usage -->
+        <div class="demo-section">
+            <h2>📊 Demo 1: Basic Pagination with Navigation</h2>
+            <div class="demo-description">
+                <h3>Features Demonstrated:</h3>
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <strong>✓ Previous/Next Buttons</strong>
+                        Navigate between pages easily
+                    </div>
+                    <div class="feature-item">
+                        <strong>✓ Page Numbers</strong>
+                        Jump to any page directly
+                    </div>
+                    <div class="feature-item">
+                        <strong>✓ Items Per Page</strong>
+                        Choose how many items to display
+                    </div>
+                    <div class="feature-item">
+                        <strong>✓ View Toggle</strong>
+                        Switch between table and card views
+                    </div>
+                </div>
+            </div>
+            <div id="demo1"></div>
+        </div>
+
+        <!-- Demo 2: Custom Configuration -->
+        <div class="demo-section">
+            <h2>⚙️ Demo 2: Custom Configuration</h2>
+            <div class="demo-description">
+                <h3>Customized Settings:</h3>
+                <p>This demo shows pagination with custom settings:</p>
+                <ul>
+                    <li>25 items per page (default)</li>
+                    <li>Maximum 5 page buttons visible</li>
+                    <li>Custom items per page options: [10, 25, 50, 100]</li>
+                </ul>
+            </div>
+            <div id="demo2"></div>
+        </div>
+
+        <!-- Usage Guide -->
+        <div class="demo-section">
+            <h2>📖 How to Use the Custom Pagination Renderer</h2>
+            
+            <h3>Step 1: Include Required Files</h3>
+            <div class="code-block">
+<span class="comment">&lt;!-- CSS files --&gt;</span>
+<span class="keyword">&lt;link</span> rel=<span class="string">"stylesheet"</span> href=<span class="string">"magic-markup.css"</span><span class="keyword">&gt;</span>
+<span class="keyword">&lt;link</span> rel=<span class="string">"stylesheet"</span> href=<span class="string">"renderers/pagination-renderer.css"</span><span class="keyword">&gt;</span>
+
+<span class="comment">&lt;!-- JavaScript files --&gt;</span>
+<span class="keyword">&lt;script</span> src=<span class="string">"magic-markup.js"</span><span class="keyword">&gt;&lt;/script&gt;</span>
+<span class="keyword">&lt;script</span> src=<span class="string">"renderers/pagination-renderer.js"</span><span class="keyword">&gt;&lt;/script&gt;</span>
+            </div>
+
+            <h3>Step 2: Create the Renderer</h3>
+            <div class="code-block">
+<span class="comment">// Create pagination renderer with custom config</span>
+<span class="keyword">const</span> paginationRenderer = createPaginationRenderer({
+    itemsPerPage: <span class="number">10</span>,
+    showPageNumbers: <span class="keyword">true</span>,
+    maxPageButtons: <span class="number">7</span>,
+    showItemsPerPageSelector: <span class="keyword">true</span>,
+    itemsPerPageOptions: [<span class="number">5</span>, <span class="number">10</span>, <span class="number">25</span>, <span class="number">50</span>, <span class="number">100</span>],
+    viewMode: <span class="keyword">null</span>  <span class="comment">// null = toggle, 'table' or 'cards'</span>
+});
+            </div>
+
+            <h3>Step 3: Register and Use the Renderer</h3>
+            <div class="code-block">
+<span class="comment">// Register the custom renderer</span>
+<span class="keyword">MagicMarkup</span>.registerRenderer(<span class="string">'products'</span>, paginationRenderer);
+
+<span class="comment">// Render your data</span>
+<span class="keyword">const</span> data = {
+    products: [
+        { id: <span class="number">1</span>, name: <span class="string">"Product 1"</span>, price: <span class="number">29.99</span>, stock: <span class="number">100</span> },
+        { id: <span class="number">2</span>, name: <span class="string">"Product 2"</span>, price: <span class="number">39.99</span>, stock: <span class="number">50</span> },
+        <span class="comment">// ... more products</span>
+    ]
+};
+
+<span class="keyword">MagicMarkup</span>.render(<span class="string">'#container'</span>, data);
+            </div>
+
+            <h3>Configuration Options</h3>
+            <div class="demo-description">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: #f1f5f9;">
+                            <th style="padding: 10px; text-align: left; border: 1px solid #e2e8f0;">Option</th>
+                            <th style="padding: 10px; text-align: left; border: 1px solid #e2e8f0;">Type</th>
+                            <th style="padding: 10px; text-align: left; border: 1px solid #e2e8f0;">Default</th>
+                            <th style="padding: 10px; text-align: left; border: 1px solid #e2e8f0;">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #e2e8f0;"><code>itemsPerPage</code></td>
+                            <td style="padding: 10px; border: 1px solid #e2e8f0;">Number</td>
+                            <td style="padding: 10px; border: 1px solid #e2e8f0;">10</td>
+                            <td style="padding: 10px; border: 1px solid #e2e8f0;">Number of items to display per page</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #e2e8f0;"><code>showPageNumbers</code></td>
+                            <td style="padding: 10px; border: 1px solid #e2e8f0;">Boolean</td>
+                            <td style="padding: 10px; border: 1px solid #e2e8f0;">true</td>
+                            <td style="padding: 10px; border: 1px solid #e2e8f0;">Show page number buttons</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #e2e8f0;"><code>maxPageButtons</code></td>
+                            <td style="padding: 10px; border: 1px solid #e2e8f0;">Number</td>
+                            <td style="padding: 10px; border: 1px solid #e2e8f0;">7</td>
+                            <td style="padding: 10px; border: 1px solid #e2e8f0;">Maximum number of page buttons to show</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #e2e8f0;"><code>showItemsPerPageSelector</code></td>
+                            <td style="padding: 10px; border: 1px solid #e2e8f0;">Boolean</td>
+                            <td style="padding: 10px; border: 1px solid #e2e8f0;">true</td>
+                            <td style="padding: 10px; border: 1px solid #e2e8f0;">Show items per page dropdown</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #e2e8f0;"><code>itemsPerPageOptions</code></td>
+                            <td style="padding: 10px; border: 1px solid #e2e8f0;">Array</td>
+                            <td style="padding: 10px; border: 1px solid #e2e8f0;">[5, 10, 25, 50, 100]</td>
+                            <td style="padding: 10px; border: 1px solid #e2e8f0;">Options for items per page selector</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #e2e8f0;"><code>viewMode</code></td>
+                            <td style="padding: 10px; border: 1px solid #e2e8f0;">String</td>
+                            <td style="padding: 10px; border: 1px solid #e2e8f0;">null</td>
+                            <td style="padding: 10px; border: 1px solid #e2e8f0;">null (toggle), 'table', or 'cards'</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="../src/magic-markup.js"></script>
+    <script src="../src/renderers/pagination-renderer.js"></script>
+    <script>
+        // Generate sample data
+        function generateProducts(count) {
+            const categories = ['Electronics', 'Clothing', 'Books', 'Home & Garden', 'Sports', 'Toys', 'Food'];
+            const brands = ['BrandA', 'BrandB', 'BrandC', 'BrandD', 'BrandE'];
+            const products = [];
+            
+            for (let i = 1; i <= count; i++) {
+                products.push({
+                    id: i,
+                    name: `Product ${i}`,
+                    category: categories[Math.floor(Math.random() * categories.length)],
+                    brand: brands[Math.floor(Math.random() * brands.length)],
+                    price: '$' + (Math.random() * 200 + 10).toFixed(2),
+                    stock: Math.floor(Math.random() * 200),
+                    rating: (Math.random() * 2 + 3).toFixed(1) + ' ⭐',
+                    status: Math.random() > 0.3 ? 'In Stock' : 'Low Stock'
+                });
+            }
+            
+            return products;
+        }
+
+        // Demo 1: Basic pagination renderer
+        const renderer1 = createPaginationRenderer({
+            itemsPerPage: 10,
+            showPageNumbers: true,
+            maxPageButtons: 7,
+            showItemsPerPageSelector: true,
+            itemsPerPageOptions: [5, 10, 25, 50],
+            viewMode: null  // Enable view toggle
+        });
+
+        const data1 = {
+            products: generateProducts(100)
+        };
+
+        const mm1 = new MagicMarkup('#demo1', {
+            showHeader: false,
+            showStats: false
+        });
+        mm1.registerRenderer('products', renderer1);
+        mm1.render(data1);
+
+        // Demo 2: Custom configuration
+        const renderer2 = createPaginationRenderer({
+            itemsPerPage: 25,
+            showPageNumbers: true,
+            maxPageButtons: 5,
+            showItemsPerPageSelector: true,
+            itemsPerPageOptions: [10, 25, 50, 100],
+            viewMode: null
+        });
+
+        const data2 = {
+            orders: generateProducts(150)
+        };
+
+        const mm2 = new MagicMarkup('#demo2', {
+            showHeader: false,
+            showStats: false
+        });
+        mm2.registerRenderer('orders', renderer2);
+        mm2.render(data2);
+    </script>
+</body>
+</html>

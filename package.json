@@ -6,7 +6,7 @@
   "style": "dist/magic-markup.css",
   "scripts": {
     "build": "node build.js",
-    "watch": "chokidar \"src/magic-markup.js\" \"src/magic-markup.css\" \"src/magic-markup-dark.css\" -c \"npm run build\"",
+    "watch": "chokidar \"src/magic-markup.js\" \"src/magic-markup.css\" \"src/magic-markup-dark.css\" \"src/magic-markup-wrapper.css\" -c \"npm run build\"",
     "dev": "npm run build && npm run watch",
     "serve": "python3 -m http.server 8765",
     "serve-win": "python -m http.server 8765"

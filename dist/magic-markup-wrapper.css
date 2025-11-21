@@ -1,0 +1,136 @@
+/**
+ * Magic Markup - Customization Wrapper
+ * Version: 1.0.0
+ * 
+ * Load this AFTER magic-markup.css (and optionally magic-markup-dark.css)
+ * to apply customizations for better integration with your existing styles.
+ * 
+ * Usage:
+ * <link rel="stylesheet" href="magic-markup.css">
+ * <link rel="stylesheet" href="magic-markup-dark.css"> <!-- optional -->
+ * <link rel="stylesheet" href="magic-markup-wrapper.css">
+ * 
+ * This wrapper is compatible with both light and dark themes.
+ */
+
+/* ============================================
+   FONT SIZE INHERITANCE
+   ============================================
+   
+   Uncomment this section if you need Magic Markup to inherit 
+   font-sizes from your existing CSS.
+   
+   USE CASE: If your project has custom font-size settings like:
+   
+   html {
+     font-size: 52%;
+   }
+   
+   The standard magic-markup.css uses fixed rem/px values that 
+   will render too small with reduced base font-sizes.
+   
+   TO ENABLE: Remove the opening /* and closing */ markers
+   around the entire section below.
+   
+   ============================================ */
+
+/*
+.mm-container { font-size: inherit !important; }
+.mm-header h1 { font-size: inherit !important; }
+.mm-subtitle { font-size: inherit !important; }
+.mm-stat-label { font-size: inherit !important; }
+.mm-stat-value { font-size: inherit !important; }
+.mm-key-value-pair .mm-key { font-size: inherit !important; }
+.mm-key-value-pair .mm-value { font-size: inherit !important; }
+.mm-action-btn { font-size: inherit !important; }
+.mm-action-btn-small { font-size: inherit !important; }
+.mm-accordion-title { font-size: inherit !important; }
+.mm-accordion-icon { font-size: inherit !important; }
+.mm-card-header { font-size: inherit !important; }
+.mm-card-body { font-size: inherit !important; }
+.mm-nested-header { font-size: inherit !important; }
+.mm-nested-header::before { font-size: inherit !important; }
+.mm-nested-object .mm-card-row::before { font-size: inherit !important; }
+.mm-data-table { font-size: inherit !important; }
+.mm-toggle-button { font-size: inherit !important; }
+.mm-label-item { font-size: inherit !important; }
+.mm-badge-item { font-size: inherit !important; }
+.mm-value-severity-critical,
+.mm-value-severity-error { font-size: inherit !important; }
+.mm-value-severity-warning { font-size: inherit !important; }
+.mm-value-severity-info { font-size: inherit !important; }
+.mm-value-severity-success { font-size: inherit !important; }
+.mm-error h3 { font-size: inherit !important; }
+.mm-error p { font-size: inherit !important; }
+
+@media (max-width: 768px) {
+    .mm-header h1 { font-size: inherit !important; }
+    .mm-subtitle { font-size: inherit !important; }
+}
+
+@media (max-width: 480px) {
+    .mm-header h1 { font-size: inherit !important; }
+    .mm-key-value-pair .mm-key,
+    .mm-key-value-pair .mm-value { font-size: inherit !important; }
+}
+*/
+
+/* ============================================
+   CUSTOM OVERRIDES
+   ============================================
+   
+   Add your own customizations below.
+   Use !important to ensure they override the base styles.
+   
+   ============================================ */
+
+/* Example: Change primary color
+:root {
+    --mm-primary-color: #8b5cf6 !important;
+    --mm-primary-hover: #7c3aed !important;
+}
+*/
+
+/* Example: Adjust container width
+.mm-container {
+    max-width: 1600px !important;
+}
+*/
+
+/* Example: Increase container padding
+.mm-container {
+    padding: 2rem 1rem !important;
+}
+*/
+
+/* Example: Change border radius
+:root {
+    --mm-radius-sm: 0.125rem !important;
+    --mm-radius-md: 0.25rem !important;
+    --mm-radius-lg: 0.5rem !important;
+}
+*/
+
+/* Example: Adjust spacing
+:root {
+    --mm-spacing-xs: 0.25rem !important;
+    --mm-spacing-sm: 0.5rem !important;
+    --mm-spacing-md: 1rem !important;
+    --mm-spacing-lg: 1.5rem !important;
+    --mm-spacing-xl: 2rem !important;
+}
+*/
+
+/* Example: Use custom font family
+.mm-container {
+    font-family: 'Your Custom Font', -apple-system, sans-serif !important;
+}
+*/
+
+/* Example: Hide specific elements
+.mm-stats {
+    display: none !important;
+}
+*/
+
+/* Add your customizations here */

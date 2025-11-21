@@ -1,0 +1,719 @@
+/**
+ * Magic Markup - Pagination Renderer
+ * A custom renderer that adds full pagination controls with navigation
+ * 
+ * Features:
+ * - Previous/Next buttons
+ * - Page number buttons
+ * - Items per page selector
+ * - Page info display
+ * - Responsive design
+ * 
+ * @version 1.0.0
+ * @author Magic Markup Team
+ */
+
+(function(global) {
+    'use strict';
+
+    /**
+     * Creates a pagination renderer with full navigation controls
+     * @param {Object} config - Configuration options
+     * @returns {Object} Renderer object for Magic Markup
+     */
+    function createPaginationRenderer(config = {}) {
+        const defaults = {
+            itemsPerPage: 10,
+            showPageNumbers: true,
+            maxPageButtons: 7,
+            showItemsPerPageSelector: true,
+            itemsPerPageOptions: [5, 10, 25, 50, 100],
+            viewMode: null, // null = toggle, 'table' = table only, 'cards' = cards only
+            cardConfig: {}, // Card configuration including header, fields, buttons, etc.
+            showSearch: true, // Enable/disable search
+            searchPlaceholder: 'Search...', // Placeholder text
+            searchFields: null, // null = all fields, or array of field names
+            caseSensitive: false, // Case-insensitive by default
+            links: {
+                enabled: false // Enable/disable auto-link conversion
+            }
+        };
+        
+        const settings = { ...defaults, ...config };
+        
+        /**
+         * Converts URLs in text to clickable links 
+         * @param {*} value - The value to process
+         * @returns {string} HTML string with links
+         */
+        function convertUrlsToLinks(value) {
+            if (value === null || value === undefined) return '';
+            const text = String(value);
+            
+            if (!settings.links.enabled) {
+                return text;
+            }
+            
+            // Regex to match URLs
+            const urlRegex = /(https?:\/\/[^\s<>"]+)/g;
+            return text.replace(urlRegex, (url) => {
+                return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="mm-auto-link">${url}</a>`;
+            });
+        }
+        
+        return {
+            currentPage: 1,
+            itemsPerPage: settings.itemsPerPage,
+            viewMode: settings.viewMode || 'table',
+            currentData: null,
+            currentUtils: null,
+            searchTerm: '',
+            filteredData: null,
+            searchDebounceTimer: null,
+            
+            render: function(key, data, label, utils) {
+                const container = document.createElement('div');
+                container.className = 'mm-pagination-wrapper';
+                container.setAttribute('data-key', key);
+                
+                this.currentData = data;
+                this.currentUtils = utils;
+                
+                if (settings.viewMode === null) {
+                    const toggleDiv = this.createViewToggle(container, data, key, utils);
+                    container.appendChild(toggleDiv);
+                }
+                
+                this.renderPage(container, data, key, utils);
+                
+                return container;
+            },
+            
+            createViewToggle: function(container, data, key, utils) {
+                const toggleDiv = document.createElement('div');
+                toggleDiv.className = 'mm-view-toggle';
+                
+                // Left section: Button group
+                const buttonGroup = document.createElement('div');
+                buttonGroup.className = 'mm-button-group';
+                
+                const tableBtn = document.createElement('button');
+                tableBtn.className = 'mm-toggle-button' + (this.viewMode === 'table' ? ' mm-active' : '');
+                tableBtn.textContent = '📊 Table View';
+                
+                const cardBtn = document.createElement('button');
+                cardBtn.className = 'mm-toggle-button' + (this.viewMode === 'cards' ? ' mm-active' : '');
+                cardBtn.textContent = '🗂️ Card View';
+                
+                tableBtn.onclick = () => {
+                    this.viewMode = 'table';
+                    this.renderPage(container, data, key, utils);
+                };
+                
+                cardBtn.onclick = () => {
+                    this.viewMode = 'cards';
+                    this.renderPage(container, data, key, utils);
+                };
+                
+                buttonGroup.appendChild(tableBtn);
+                buttonGroup.appendChild(cardBtn);
+                toggleDiv.appendChild(buttonGroup);
+                
+                // Right section: Search box
+                if (settings.showSearch) {
+                    toggleDiv.appendChild(this.createSearchBox(container, data, key, utils));
+                }
+                
+                return toggleDiv;
+            },
+            
+            createSearchBox: function(container, data, key, utils) {
+                const searchContainer = document.createElement('div');
+                searchContainer.className = 'mm-search-container';
+                
+                const searchWrapper = document.createElement('div');
+                searchWrapper.className = 'mm-search-wrapper';
+                
+                const searchIcon = document.createElement('span');
+                searchIcon.className = 'mm-search-icon';
+                searchIcon.textContent = '🔍';
+                
+                const searchInput = document.createElement('input');
+                searchInput.type = 'text';
+                searchInput.className = 'mm-search-input';
+                searchInput.placeholder = settings.searchPlaceholder;
+                searchInput.value = this.searchTerm;
+                
+                const clearBtn = document.createElement('button');
+                clearBtn.className = 'mm-search-clear';
+                clearBtn.textContent = '×';
+                clearBtn.style.display = this.searchTerm ? 'block' : 'none';
+                
+                searchInput.oninput = (e) => {
+                    const value = e.target.value;
+                    clearBtn.style.display = value ? 'block' : 'none';
+                    
+                    // Debounce search
+                    if (this.searchDebounceTimer) {
+                        clearTimeout(this.searchDebounceTimer);
+                    }
+                    
+                    this.searchDebounceTimer = setTimeout(() => {
+                        this.searchTerm = value;
+                        this.filteredData = this.filterData(data, value);
+                        this.currentPage = 1; // Reset to first page
+                        this.renderPage(container, data, key, utils);
+                    }, 300);
+                };
+                
+                clearBtn.onclick = () => {
+                    searchInput.value = '';
+                    this.searchTerm = '';
+                    this.filteredData = null;
+                    clearBtn.style.display = 'none';
+                    this.currentPage = 1;
+                    this.renderPage(container, data, key, utils);
+                };
+                
+                searchWrapper.appendChild(searchIcon);
+                searchWrapper.appendChild(searchInput);
+                searchWrapper.appendChild(clearBtn);
+                searchContainer.appendChild(searchWrapper);
+                
+                return searchContainer;
+            },
+            
+            filterData: function(data, searchTerm) {
+                if (!searchTerm || searchTerm.trim() === '') {
+                    return null;
+                }
+                
+                const term = settings.caseSensitive ? searchTerm : searchTerm.toLowerCase();
+                const fieldsToSearch = settings.searchFields;
+                
+                return data.filter(item => {
+                    const entries = fieldsToSearch 
+                        ? Object.entries(item).filter(([key]) => fieldsToSearch.includes(key))
+                        : Object.entries(item);
+                    
+                    return entries.some(([key, value]) => {
+                        if (value === null || value === undefined) {
+                            return false;
+                        }
+                        
+                        const stringValue = settings.caseSensitive 
+                            ? String(value) 
+                            : String(value).toLowerCase();
+                        
+                        return stringValue.includes(term);
+                    });
+                });
+            },
+            
+            getDataToDisplay: function(data) {
+                return this.filteredData !== null ? this.filteredData : data;
+            },
+            
+            renderPage: function(container, data, key, utils) {
+                const existingContent = container.querySelector('.mm-paginated-content');
+                const existingPagination = container.querySelector('.mm-pagination-container');
+                if (existingContent) existingContent.remove();
+                if (existingPagination) existingPagination.remove();
+                
+                this.updateToggleButtons(container);
+                
+                const displayData = this.getDataToDisplay(data);
+                const totalItems = displayData.length;
+                const totalPages = Math.ceil(totalItems / this.itemsPerPage);
+                
+                if (this.currentPage > totalPages) {
+                    this.currentPage = Math.max(1, totalPages);
+                }
+                
+                const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+                const endIndex = Math.min(startIndex + this.itemsPerPage, totalItems);
+                const pageData = displayData.slice(startIndex, endIndex);
+                
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'mm-paginated-content';
+                
+                if (this.viewMode === 'table') {
+                    contentDiv.appendChild(this.createTableView(pageData, key, utils));
+                } else {
+                    contentDiv.appendChild(this.createCardView(pageData, key, utils));
+                }
+                
+                container.appendChild(contentDiv);
+                container.appendChild(this.createPaginationControls(totalItems, totalPages, startIndex, endIndex, container, data, key, utils, data.length));
+            },
+            
+            updateToggleButtons: function(container) {
+                const toggleButtons = container.querySelectorAll('.mm-toggle-button');
+                toggleButtons.forEach(btn => {
+                    btn.classList.remove('mm-active');
+                    if ((btn.textContent.includes('Table') && this.viewMode === 'table') ||
+                        (btn.textContent.includes('Card') && this.viewMode === 'cards')) {
+                        btn.classList.add('mm-active');
+                    }
+                });
+            },
+            
+            createTableView: function(data, key, utils) {
+                const container = document.createElement('div');
+                container.className = 'mm-table-container';
+                
+                if (data.length === 0) {
+                    container.innerHTML = '<p class="mm-no-data">No data available</p>';
+                    return container;
+                }
+                
+                const table = document.createElement('table');
+                table.className = 'mm-data-table';
+                
+                const keys = Object.keys(data[0]);
+                
+                // Check if buttons are configured
+                const hasButtons = settings.cardConfig.buttons && settings.cardConfig.buttons.length > 0;
+                
+                const thead = document.createElement('thead');
+                const headerRow = document.createElement('tr');
+                keys.forEach(k => {
+                    const th = document.createElement('th');
+                    th.textContent = utils.formatLabel(k);
+                    headerRow.appendChild(th);
+                });
+                
+                // Add actions column header if buttons configured
+                if (hasButtons) {
+                    const actionsHeader = document.createElement('th');
+                    actionsHeader.textContent = 'Actions';
+                    actionsHeader.className = 'mm-actions-column';
+                    headerRow.appendChild(actionsHeader);
+                }
+                
+                thead.appendChild(headerRow);
+                table.appendChild(thead);
+                
+                const tbody = document.createElement('tbody');
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    keys.forEach(k => {
+                        const td = document.createElement('td');
+                        const value = row[k];
+                        
+                        // Apply link conversion if enabled
+                        if (settings.links.enabled) {
+                            td.innerHTML = convertUrlsToLinks(value);
+                        } else {
+                            td.textContent = value === null || value === undefined ? '' : value;
+                        }
+                        
+                        utils.applyValueHighlighting(td, value);
+                        tr.appendChild(td);
+                    });
+                    
+                    // Add actions column with buttons
+                    if (hasButtons) {
+                        const actionsCell = document.createElement('td');
+                        actionsCell.className = 'mm-actions-column';
+                        
+                        const buttonContainer = document.createElement('div');
+                        buttonContainer.className = 'mm-action-buttons';
+                        
+                        settings.cardConfig.buttons.forEach(btnConfig => {
+                            const button = document.createElement('button');
+                            button.className = `mm-action-btn-small ${btnConfig.className || 'mm-btn-primary'}`;
+                            
+                            const buttonText = btnConfig.name || btnConfig.label || 'Action';
+                            button.textContent = btnConfig.icon ? `${btnConfig.icon} ${buttonText}` : buttonText;
+                            
+                            const clickHandler = btnConfig.handler || btnConfig.onClick;
+                            if (clickHandler) {
+                                button.addEventListener('click', (e) => {
+                                    e.stopPropagation();
+                                    clickHandler(row, button);
+                                });
+                            }
+                            
+                            buttonContainer.appendChild(button);
+                        });
+                        
+                        actionsCell.appendChild(buttonContainer);
+                        tr.appendChild(actionsCell);
+                    }
+                    
+                    tbody.appendChild(tr);
+                });
+                table.appendChild(tbody);
+                
+                container.appendChild(table);
+                return container;
+            },
+            
+            createCardView: function(data, key, utils) {
+                const container = document.createElement('div');
+                container.className = 'mm-card-grid';
+                
+                if (data.length === 0) {
+                    container.innerHTML = '<p class="mm-no-data">No data available</p>';
+                    return container;
+                }
+                
+                const cardConfig = settings.cardConfig || {};
+                
+                data.forEach((item, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'mm-card';
+                    
+                    // Create card header
+                    const header = document.createElement('div');
+                    header.className = 'mm-card-header';
+                    
+                    // Use configured header field or fallback to defaults
+                    let headerText = `Item ${index + 1}`;
+                    const headerField = cardConfig.header;
+                    if (headerField && Object.prototype.hasOwnProperty.call(item, headerField)) {
+                        const headerValue = item[headerField];
+                        if (headerValue !== null && headerValue !== undefined && headerValue !== '') {
+                            headerText = String(headerValue);
+                        }
+                    } else if (item.name || item.title || item.id) {
+                        headerText = item.name || item.title || item.id;
+                    }
+                    header.textContent = headerText;
+                    card.appendChild(header);
+                    
+                    // Create card body
+                    const body = document.createElement('div');
+                    body.className = 'mm-card-body';
+                    
+                    // Filter fields based on configuration
+                    let entries = Object.entries(item);
+                    if (cardConfig.fields) {
+                        const fields = cardConfig.fields;
+                        if (fields.includes && fields.includes.length > 0) {
+                            entries = entries.filter(([k]) => fields.includes.includes(k));
+                        } else if (fields.excludes && fields.excludes.length > 0) {
+                            entries = entries.filter(([k]) => !fields.excludes.includes(k));
+                        }
+                    }
+                    
+                    entries.forEach(([k, value]) => {
+                        const row = document.createElement('div');
+                        row.className = 'mm-card-row';
+                        
+                        const keySpan = document.createElement('span');
+                        keySpan.className = 'mm-key';
+                        keySpan.textContent = utils.formatLabel(k) + ':';
+                        
+                        const valueSpan = document.createElement('span');
+                        valueSpan.className = 'mm-value';
+                        
+                        // Apply link conversion if enabled
+                        if (settings.links.enabled) {
+                            valueSpan.innerHTML = convertUrlsToLinks(value);
+                        } else {
+                            valueSpan.textContent = value === null || value === undefined ? '' : value;
+                        }
+                        
+                        utils.applyValueHighlighting(valueSpan, value);
+                        
+                        row.appendChild(keySpan);
+                        row.appendChild(valueSpan);
+                        body.appendChild(row);
+                    });
+                    
+                    card.appendChild(body);
+                    
+                    // Add card footer with buttons if configured
+                    if (cardConfig.buttons && cardConfig.buttons.length > 0) {
+                        const footer = document.createElement('div');
+                        footer.className = 'mm-card-footer';
+                        
+                        const buttonContainer = document.createElement('div');
+                        buttonContainer.className = 'mm-action-buttons';
+                        
+                        cardConfig.buttons.forEach(btnConfig => {
+                            const button = document.createElement('button');
+                            button.className = `mm-action-btn-small ${btnConfig.className || 'mm-btn-primary'}`;
+                            
+                            const buttonText = btnConfig.name || btnConfig.label || 'Action';
+                            button.textContent = btnConfig.icon ? `${btnConfig.icon} ${buttonText}` : buttonText;
+                            
+                            const clickHandler = btnConfig.handler || btnConfig.onClick;
+                            if (clickHandler) {
+                                button.addEventListener('click', (e) => {
+                                    e.stopPropagation();
+                                    clickHandler(item, button);
+                                });
+                            }
+                            
+                            buttonContainer.appendChild(button);
+                        });
+                        
+                        footer.appendChild(buttonContainer);
+                        card.appendChild(footer);
+                    }
+                    
+                    container.appendChild(card);
+                });
+                
+                return container;
+            },
+            
+            createPaginationControls: function(totalItems, totalPages, startIndex, endIndex, container, data, key, utils, originalTotal) {
+                const paginationDiv = document.createElement('div');
+                paginationDiv.className = 'mm-pagination-container';
+                
+                const controls = document.createElement('div');
+                controls.className = 'mm-pagination-controls';
+                
+                const leftSection = document.createElement('div');
+                leftSection.className = 'mm-pagination-left';
+                
+                const info = document.createElement('div');
+                info.className = 'mm-pagination-info';
+                
+                // Show filtered count if search is active
+                if (this.filteredData !== null && totalItems !== originalTotal) {
+                    info.textContent = `Showing ${startIndex + 1}-${endIndex} of ${totalItems} items (filtered from ${originalTotal} total)`;
+                } else {
+                    info.textContent = `Showing ${startIndex + 1}-${endIndex} of ${totalItems} items`;
+                }
+                
+                leftSection.appendChild(info);
+                
+                if (settings.showItemsPerPageSelector) {
+                    leftSection.appendChild(this.createItemsPerPageSelector(container, data, key, utils));
+                }
+                
+                controls.appendChild(leftSection);
+                
+                const rightSection = document.createElement('div');
+                rightSection.className = 'mm-pagination-right';
+                
+                const buttonsDiv = document.createElement('div');
+                buttonsDiv.className = 'mm-pagination-buttons';
+                
+                const prevBtn = document.createElement('button');
+                prevBtn.className = 'mm-pagination-btn mm-pagination-nav-btn';
+                prevBtn.textContent = '← Prev';
+                prevBtn.disabled = this.currentPage === 1;
+                prevBtn.onclick = () => {
+                    if (this.currentPage > 1) {
+                        this.currentPage--;
+                        this.renderPage(container, data, key, utils);
+                    }
+                };
+                buttonsDiv.appendChild(prevBtn);
+                
+                if (settings.showPageNumbers) {
+                    buttonsDiv.appendChild(this.createPageNumbers(totalPages, container, data, key, utils));
+                }
+                
+                const nextBtn = document.createElement('button');
+                nextBtn.className = 'mm-pagination-btn mm-pagination-nav-btn';
+                nextBtn.textContent = 'Next →';
+                nextBtn.disabled = this.currentPage === totalPages;
+                nextBtn.onclick = () => {
+                    if (this.currentPage < totalPages) {
+                        this.currentPage++;
+                        this.renderPage(container, data, key, utils);
+                    }
+                };
+                buttonsDiv.appendChild(nextBtn);
+                
+                rightSection.appendChild(buttonsDiv);
+                controls.appendChild(rightSection);
+                paginationDiv.appendChild(controls);
+                
+                return paginationDiv;
+            },
+            
+            createPageNumbers: function(totalPages, container, data, key, utils) {
+                const pageNumbersDiv = document.createElement('div');
+                pageNumbersDiv.className = 'mm-page-numbers';
+                
+                const maxButtons = settings.maxPageButtons;
+                let startPage = Math.max(1, this.currentPage - Math.floor(maxButtons / 2));
+                let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+                
+                if (endPage - startPage < maxButtons - 1) {
+                    startPage = Math.max(1, endPage - maxButtons + 1);
+                }
+                
+                if (startPage > 1) {
+                    pageNumbersDiv.appendChild(this.createPageButton(1, container, data, key, utils));
+                    
+                    if (startPage > 2) {
+                        const ellipsis = document.createElement('span');
+                        ellipsis.className = 'mm-pagination-ellipsis';
+                        ellipsis.textContent = '...';
+                        pageNumbersDiv.appendChild(ellipsis);
+                    }
+                }
+                
+                for (let i = startPage; i <= endPage; i++) {
+                    pageNumbersDiv.appendChild(this.createPageButton(i, container, data, key, utils));
+                }
+                
+                if (endPage < totalPages) {
+                    if (endPage < totalPages - 1) {
+                        const ellipsis = document.createElement('span');
+                        ellipsis.className = 'mm-pagination-ellipsis';
+                        ellipsis.textContent = '...';
+                        pageNumbersDiv.appendChild(ellipsis);
+                    }
+                    
+                    pageNumbersDiv.appendChild(this.createPageButton(totalPages, container, data, key, utils));
+                }
+                
+                return pageNumbersDiv;
+            },
+            
+            createPageButton: function(pageNum, container, data, key, utils) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = 'mm-pagination-btn' + (pageNum === this.currentPage ? ' active' : '');
+                pageBtn.textContent = pageNum;
+                pageBtn.onclick = () => {
+                    this.currentPage = pageNum;
+                    this.renderPage(container, data, key, utils);
+                };
+                return pageBtn;
+            },
+            
+            createItemsPerPageSelector: function(container, data, key, utils) {
+                const selectorDiv = document.createElement('div');
+                selectorDiv.className = 'mm-pagination-selector';
+                
+                const label = document.createElement('span');
+                label.className = 'mm-pagination-label';
+                label.textContent = 'Items per page:';
+                
+                const select = document.createElement('select');
+                select.className = 'mm-pagination-select';
+                
+                settings.itemsPerPageOptions.forEach(option => {
+                    const opt = document.createElement('option');
+                    opt.value = option;
+                    opt.textContent = option;
+                    opt.selected = option === this.itemsPerPage;
+                    select.appendChild(opt);
+                });
+                
+                select.onchange = (e) => {
+                    this.itemsPerPage = parseInt(e.target.value);
+                    this.currentPage = 1;
+                    this.renderPage(container, data, key, utils);
+                };
+                
+                selectorDiv.appendChild(label);
+                selectorDiv.appendChild(select);
+                
+                return selectorDiv;
+            },
+            
+            getStyles: function() {
+                return `
+                    .mm-pagination-container {
+                        margin-top: 20px;
+                        padding: 15px;
+                        background: #f8fafc;
+                        border-radius: 6px;
+                        border: 1px solid #e2e8f0;
+                    }
+                    .mm-pagination-controls {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        flex-wrap: wrap;
+                        gap: 15px;
+                    }
+                    .mm-pagination-left,
+                    .mm-pagination-right {
+                        display: flex;
+                        align-items: center;
+                        gap: 15px;
+                        flex-wrap: wrap;
+                    }
+                    .mm-pagination-info {
+                        color: #64748b;
+                        font-size: 0.9em;
+                    }
+                    .mm-pagination-selector {
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                    }
+                    .mm-pagination-label {
+                        color: #64748b;
+                        font-size: 0.9em;
+                    }
+                    .mm-pagination-select {
+                        padding: 6px 10px;
+                        border: 1px solid #cbd5e1;
+                        border-radius: 4px;
+                        background: white;
+                        color: #475569;
+                        font-size: 0.9em;
+                        cursor: pointer;
+                    }
+                    .mm-pagination-buttons {
+                        display: flex;
+                        gap: 5px;
+                        align-items: center;
+                        flex-wrap: wrap;
+                    }
+                    .mm-pagination-btn {
+                        padding: 6px 12px;
+                        border: 1px solid #cbd5e1;
+                        background: white;
+                        color: #475569;
+                        border-radius: 4px;
+                        cursor: pointer;
+                        font-size: 0.9em;
+                        transition: all 0.2s;
+                    }
+                    .mm-pagination-btn:hover:not(:disabled) {
+                        background: #f1f5f9;
+                        border-color: #94a3b8;
+                    }
+                    .mm-pagination-btn:disabled {
+                        opacity: 0.5;
+                        cursor: not-allowed;
+                    }
+                    .mm-pagination-btn.active {
+                        background: #3b82f6;
+                        color: white;
+                        border-color: #3b82f6;
+                    }
+                    .mm-pagination-btn.active:hover {
+                        background: #2563eb;
+                        border-color: #2563eb;
+                    }
+                    .mm-page-numbers {
+                        display: flex;
+                        gap: 3px;
+                    }
+                    .mm-pagination-ellipsis {
+                        padding: 6px 8px;
+                        color: #94a3b8;
+                    }
+                    .mm-no-data {
+                        text-align: center;
+                        padding: 40px 20px;
+                        color: #94a3b8;
+                    }
+                `;
+            }
+        };
+    }
+
+    // Export for different module systems
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = createPaginationRenderer;
+    } else {
+        global.createPaginationRenderer = createPaginationRenderer;
+    }
+
+})(typeof window !== 'undefined' ? window : this);

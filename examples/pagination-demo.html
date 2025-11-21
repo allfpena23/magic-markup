@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic Markup - Pagination Demo</title>
+    <link rel="stylesheet" href="../src/magic-markup.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f4f8;
+        }
+        .page-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .page-header h1 {
+            color: #2563eb;
+            margin-bottom: 10px;
+        }
+        .page-header p {
+            color: #64748b;
+            font-size: 1.1em;
+        }
+        .demo-section {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .demo-section h2 {
+            color: #1e293b;
+            margin-top: 0;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+        .demo-description {
+            background: #f8fafc;
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .demo-description code {
+            background: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        .code-example {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            line-height: 1.5;
+        }
+        .code-example .keyword { color: #c792ea; }
+        .code-example .string { color: #c3e88d; }
+        .code-example .number { color: #f78c6c; }
+        .code-example .comment { color: #546e7a; font-style: italic; }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <h1>🪄 Magic Markup - Pagination Demo</h1>
+        <p>Complete guide to implementing pagination in your projects</p>
+    </div>
+
+    <!-- Demo 1: Basic Built-in Pagination -->
+    <div class="demo-section">
+        <h2>📄 Demo 1: Basic Built-in Pagination</h2>
+        <div class="demo-description">
+            <p><strong>Simple pagination using Magic Markup's built-in feature.</strong></p>
+            <p>This shows the first <code>itemsPerPage</code> items with an info message. Perfect for simple use cases.</p>
+        </div>
+        <div class="code-example">
+<span class="keyword">MagicMarkup</span>.render(<span class="string">'#container'</span>, data, {
+    card: {
+        products: {
+            pagination: {
+                enabled: <span class="keyword">true</span>,
+                itemsPerPage: <span class="number">5</span>
+            }
+        }
+    }
+});
+        </div>
+        <div id="container1"></div>
+    </div>
+
+    <!-- Demo 2: Different Page Sizes -->
+    <div class="demo-section">
+        <h2>📊 Demo 2: Different Page Sizes</h2>
+        <div class="demo-description">
+            <p><strong>Multiple datasets with different pagination settings.</strong></p>
+            <p>Shows how to configure different <code>itemsPerPage</code> values for different data types.</p>
+        </div>
+        <div class="code-example">
+<span class="keyword">MagicMarkup</span>.render(<span class="string">'#container'</span>, data, {
+    card: {
+        users: {
+            pagination: { enabled: <span class="keyword">true</span>, itemsPerPage: <span class="number">3</span> }
+        },
+        orders: {
+            pagination: { enabled: <span class="keyword">true</span>, itemsPerPage: <span class="number">10</span> }
+        }
+    }
+});
+        </div>
+        <div id="container2"></div>
+    </div>
+
+    <!-- Demo 3: Integration Guide -->
+    <div class="demo-section">
+        <h2>📚 How to Use Pagination in Your Project</h2>
+        
+        <h3>Step 1: Include Magic Markup</h3>
+        <div class="code-example">
+<span class="keyword">&lt;link</span> rel=<span class="string">"stylesheet"</span> href=<span class="string">"path/to/magic-markup.css"</span><span class="keyword">&gt;</span>
+<span class="keyword">&lt;script</span> src=<span class="string">"path/to/magic-markup.js"</span><span class="keyword">&gt;&lt;/script&gt;</span>
+        </div>
+
+        <h3>Step 2: Configure Pagination</h3>
+        <div class="code-example">
+<span class="comment">// Your data</span>
+<span class="keyword">const</span> data = {
+    products: [
+        { id: <span class="number">1</span>, name: <span class="string">"Product 1"</span>, price: <span class="number">29.99</span> },
+        { id: <span class="number">2</span>, name: <span class="string">"Product 2"</span>, price: <span class="number">39.99</span> },
+        <span class="comment">// ... more products</span>
+    ]
+};
+
+<span class="comment">// Render with pagination</span>
+<span class="keyword">MagicMarkup</span>.render(<span class="string">'#container'</span>, data, {
+    showHeader: <span class="keyword">false</span>,
+    showStats: <span class="keyword">false</span>,
+    card: {
+        products: {
+            pagination: {
+                enabled: <span class="keyword">true</span>,
+                itemsPerPage: <span class="number">10</span>  <span class="comment">// Show 10 items per page</span>
+            },
+            header: <span class="string">'name'</span>  <span class="comment">// Use 'name' field for card headers</span>
+        }
+    }
+});
+        </div>
+
+        <h3>Configuration Options</h3>
+        <div class="demo-description">
+            <p><strong>Pagination Configuration:</strong></p>
+            <ul>
+                <li><code>enabled</code> - Set to <code>true</code> to enable pagination</li>
+                <li><code>itemsPerPage</code> - Number of items to display per page (default: 10)</li>
+            </ul>
+            <p><strong>Note:</strong> The built-in pagination shows only the first page. For full navigation controls (previous/next buttons, page numbers), you would need to implement a custom renderer.</p>
+        </div>
+
+        <h3>Complete Example</h3>
+        <div class="code-example">
+<span class="keyword">&lt;!DOCTYPE html&gt;</span>
+<span class="keyword">&lt;html&gt;</span>
+<span class="keyword">&lt;head&gt;</span>
+    <span class="keyword">&lt;link</span> rel=<span class="string">"stylesheet"</span> href=<span class="string">"magic-markup.css"</span><span class="keyword">&gt;</span>
+<span class="keyword">&lt;/head&gt;</span>
+<span class="keyword">&lt;body&gt;</span>
+    <span class="keyword">&lt;div</span> id=<span class="string">"container"</span><span class="keyword">&gt;&lt;/div&gt;</span>
+    
+    <span class="keyword">&lt;script</span> src=<span class="string">"magic-markup.js"</span><span class="keyword">&gt;&lt;/script&gt;</span>
+    <span class="keyword">&lt;script&gt;</span>
+        <span class="keyword">const</span> data = {
+            products: [
+                { id: <span class="number">1</span>, name: <span class="string">"Laptop"</span>, price: <span class="number">999</span>, stock: <span class="number">15</span> },
+                { id: <span class="number">2</span>, name: <span class="string">"Mouse"</span>, price: <span class="number">29</span>, stock: <span class="number">50</span> },
+                { id: <span class="number">3</span>, name: <span class="string">"Keyboard"</span>, price: <span class="number">79</span>, stock: <span class="number">30</span> },
+                <span class="comment">// ... more products</span>
+            ]
+        };
+
+        <span class="keyword">MagicMarkup</span>.render(<span class="string">'#container'</span>, data, {
+            card: {
+                products: {
+                    pagination: {
+                        enabled: <span class="keyword">true</span>,
+                        itemsPerPage: <span class="number">5</span>
+                    }
+                }
+            }
+        });
+    <span class="keyword">&lt;/script&gt;</span>
+<span class="keyword">&lt;/body&gt;</span>
+<span class="keyword">&lt;/html&gt;</span>
+        </div>
+    </div>
+
+    <script src="../src/magic-markup.js"></script>
+    <script>
+        // Generate sample data
+        function generateProducts(count) {
+            const categories = ['Electronics', 'Clothing', 'Books', 'Home & Garden', 'Sports'];
+            const statuses = ['in stock', 'low stock', 'out of stock'];
+            const products = [];
+            
+            for (let i = 1; i <= count; i++) {
+                products.push({
+                    id: i,
+                    name: `Product ${i}`,
+                    category: categories[Math.floor(Math.random() * categories.length)],
+                    price: '$' + (Math.random() * 100 + 10).toFixed(2),
+                    stock: Math.floor(Math.random() * 100),
+                    status: statuses[Math.floor(Math.random() * statuses.length)],
+                    rating: (Math.random() * 2 + 3).toFixed(1) + ' ⭐'
+                });
+            }
+            
+            return products;
+        }
+
+        function generateUsers(count) {
+            const roles = ['admin', 'user', 'moderator'];
+            const statuses = ['active', 'inactive', 'pending'];
+            const users = [];
+            
+            for (let i = 1; i <= count; i++) {
+                users.push({
+                    id: i,
+                    name: `User ${i}`,
+                    email: `user${i}@example.com`,
+                    role: roles[Math.floor(Math.random() * roles.length)],
+                    status: statuses[Math.floor(Math.random() * statuses.length)]
+                });
+            }
+            
+            return users;
+        }
+
+        function generateOrders(count) {
+            const statuses = ['pending', 'processing', 'shipped', 'delivered'];
+            const orders = [];
+            
+            for (let i = 1; i <= count; i++) {
+                orders.push({
+                    orderId: `ORD-${1000 + i}`,
+                    customer: `Customer ${i}`,
+                    amount: '$' + (Math.random() * 500 + 50).toFixed(2),
+                    status: statuses[Math.floor(Math.random() * statuses.length)],
+                    date: new Date(2024, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28)).toLocaleDateString()
+                });
+            }
+            
+            return orders;
+        }
+
+        // Demo 1: Basic pagination with 5 items per page
+        const data1 = {
+            products: generateProducts(25)
+        };
+
+        MagicMarkup.render('#container1', data1, {
+            showHeader: false,
+            showStats: false,
+            card: {
+                products: {
+                    pagination: {
+                        enabled: true,
+                        itemsPerPage: 5
+                    },
+                    header: 'name'
+                }
+            }
+        });
+
+        // Demo 2: Multiple datasets with different pagination
+        const data2 = {
+            users: generateUsers(15),
+            orders: generateOrders(50)
+        };
+
+        MagicMarkup.render('#container2', data2, {
+            showHeader: false,
+            showStats: true,
+            card: {
+                users: {
+                    pagination: {
+                        enabled: true,
+                        itemsPerPage: 3
+                    },
+                    header: 'name'
+                },
+                orders: {
+                    pagination: {
+                        enabled: true,
+                        itemsPerPage: 10
+                    },
+                    header: 'orderId'
+                }
+            }
+        });
+    </script>
+</body>
+</html>

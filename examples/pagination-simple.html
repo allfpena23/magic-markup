@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic Markup - Simple Pagination Example</title>
+    <link rel="stylesheet" href="../src/magic-markup.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f4f8;
+        }
+        .page-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .page-header h1 {
+            color: #2563eb;
+            margin-bottom: 10px;
+        }
+        .page-header p {
+            color: #64748b;
+            font-size: 1.1em;
+        }
+        .demo-section {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .demo-section h2 {
+            color: #1e293b;
+            margin-top: 0;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+        .demo-description {
+            background: #f8fafc;
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .demo-description code {
+            background: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        
+        /* Pagination Styles */
+        .mm-pagination-container {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+        .mm-pagination-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .mm-pagination-info {
+            color: #64748b;
+            font-size: 0.9em;
+        }
+        .mm-pagination-buttons {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .mm-pagination-btn {
+            padding: 6px 12px;
+            border: 1px solid #cbd5e1;
+            background: white;
+            color: #475569;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.2s;
+        }
+        .mm-pagination-btn:hover:not(:disabled) {
+            background: #f1f5f9;
+            border-color: #94a3b8;
+        }
+        .mm-pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .mm-pagination-btn.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        .mm-pagination-select {
+            padding: 6px 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            background: white;
+            color: #475569;
+            font-size: 0.9em;
+            cursor: pointer;
+        }
+        .mm-pagination-label {
+            color: #64748b;
+            font-size: 0.9em;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <h1>🪄 Magic Markup - Pagination Example</h1>
+        <p>Learn how to implement pagination in your Magic Markup projects</p>
+    </div>
+
+    <!-- Demo 1: Basic Built-in Pagination -->
+    <div class="demo-section">
+        <h2>📄 Demo 1: Basic Built-in Pagination</h2>
+        <div class="demo-description">
+            <p><strong>Simple pagination using Magic Markup's built-in feature.</strong></p>
+            <p>Shows the first <code>itemsPerPage</code> items with an info message. This is the easiest way to limit displayed items.</p>
+        </div>
+        <div id="container1"></div>
+    </div>
+
+    <!-- Demo 2: Custom Pagination with Controls -->
+    <div class="demo-section">
+        <h2>🎯 Demo 2: Custom Pagination with Navigation</h2>
+        <div class="demo-description">
+            <p><strong>Enhanced pagination with full navigation controls.</strong></p>
+            <p>Features: Previous/Next buttons, page numbers, items per page selector, and detailed page info.</p>
+        </div>
+        <div id="container2"></div>
+    </div>
+
+    <script src="../src/magic-markup.js"></script>
+    <script>
+        // ============================================
+        // SAMPLE DATA
+        // ============================================
+        
+        // Generate sample product data
+        function generateProducts(count) {
+            const categories = ['Electronics', 'Clothing', 'Books', 'Home & Garden', 'Sports'];
+            const statuses = ['in stock', 'low stock', 'out of stock'];
+            const products = [];
+            
+            for (let i = 1; i <= count; i++) {
+                products.push({
+                    id: i,
+                    name: `Product ${i}`,
+                    category: categories[Math.floor(Math.random() * categories.length)],
+                    price: (Math.random() * 100 + 10).toFixed(2),
+                    stock: Math.floor(Math.random() * 100),
+                    status: statuses[Math.floor(Math.random() * statuses.length)],
+                    rating: (Math.random() * 2 + 3).toFixed(1)
+                });
+            }
+            
+            return products;
+        }
+
+        // Generate sample user data
+        function generateUsers(count) {
+            const roles = ['admin', 'user', 'moderator'];
+            const statuses = ['active', 'inactive', 'pending'];
+            const users = [];
+            
+            for (let i = 1; i <= count; i++) {
+                users.push({
+                    id: i,
+                    name: `User ${i}`,
+                    email: `user${i}@example.com`,
+                    role: roles[Math.floor(Math.random() * roles.length)],
+                    status: statuses[Math.floor(Math.random() * statuses.length)],
+                    joinedDate: new Date(2020 + Math.floor(Math.random() * 4), Math.floor(Math.random() * 12), Math.floor(Math.random() * 28)).toISOString()
+                });
+            }
+            
+            return users;
+        }
+
+        // ============================================
+        // DEMO 1: Basic Built-in Pagination
+        // ============================================
+        
+        const data1 = {
+            products: generateProducts(25)
+        };
+
+        MagicMarkup.render('#container1', data1, {
+            showHeader: false,
+            showStats: false,
+            card: {
+                products: {
+                    pagination: {
+                        enabled: true,
+                        itemsPerPage: 5
+                    },
+                    header: 'name'
+                }
+            }
+        });
+
+        // ============================================
+        // DEMO 2: Custom Pagination Renderer
+        // ============================================
+        
+        // Create a custom pagination renderer
+        const paginationRenderer = {
+            currentPage: 1,
+            itemsPerPage: 10,
+            
+            render: function(key, data, label, utils) {
+                const container = document.createElement('div');
+                container.className = 'mm-pagination-wrapper';
+                
+                // Create view toggle
+                const toggleDiv = document.createElement('div');
+                toggleDiv.className = 'mm-view-toggle';
+                
+                const tableBtn = document.createElement('button');
+                tableBtn.className = 'mm-toggle-button mm-active';
+                tableBtn.textContent = 'Table View';
+                
+                const cardBtn = document.createElement('button');
+                cardBtn.className = 'mm-toggle-button';
+                cardBtn.textContent = 'Card View';
+                
+                toggleDiv.appendChild(tableBtn);
+                toggleDiv.appendChild(cardBtn);
+                container.appendChild(toggleDiv);
+                
+                // Store view mode
+                this.viewMode = 'table';
+                
+                // Toggle event listeners
+                tableBtn.addEventListener('click', () => {
+                    tableBtn.classList.add('mm-active');
+                    cardBtn.classList.remove('mm-active');
+                    this.viewMode = 'table';
+                    this.renderPage(container, data, key, utils);
+                });
+                
+                cardBtn.addEventListener('click', () => {
+                    cardBtn.classList.add('mm-active');
+                    tableBtn.classList.remove('mm-active');
+                    this.viewMode = 'cards';
+                    this.renderPage(container, data, key, utils);
+                });
+                
+                // Initial render
+                this.renderPage(container, data, key, utils);
+                
+                return container;
+            },
+            
+            renderPage: function(container, data, key, utils) {
+                // Remove existing content
+                const existing = container.querySelector('.mm-paginated-content');
+                if (existing) existing.remove();
+                const existingPag = container.querySelector('.mm-pagination-container');
+                if (existingPag) existingPag.remove();
+                
+                // Calculate pagination
+                const totalItems = data.length;
+                const totalPages = Math.ceil(totalItems / this.itemsPerPage);
+                const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+                const endIndex = Math.min(startIndex + this.itemsPerPage, totalItems);
+                const pageData = data.slice(startIndex, endIndex);
+                
+                // Create content
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'mm-paginated-content';
+                
+                if (this.viewMode === 'table') {
+                    const table = this.createTable(pageData);
+                    contentDiv.appendChild(table);
+                } else {
+                    const cards = this.createCards(pageData);
+                    contentDiv.appendChild(cards);
+                }
+                
+                container.appendChild(contentDiv);
+                
+                // Create pagination controls
+                const paginationDiv = this.createControls(totalItems, totalPages, startIndex, endIndex, container, data, key, utils);
+                container.appendChild(paginationDiv);
+            },
+            
+            createTable: function(data) {
+                const container = document.createElement('div');
+                container.className = 'mm-table-container';
+                
+                const table = document.createElement('table');
+                table.className = 'mm-data-table';
+                
+                if (data.length === 0) {
+                    container.textContent = 'No data available';
+                    return container;
+                }
+                
+                // Get keys
+                const keys = Object.keys(data[0]);
+                
+                // Create header
+                const thead = document.createElement('thead');
+                const headerRow = document.createElement('tr');
+                keys.forEach(key => {
+                    const th = document.createElement('th');
+                    th.textContent = key.charAt(0).toUpperCase() + key.slice(1);
+                    headerRow.appendChild(th);
+                });
+                thead.appendChild(headerRow);
+                table.appendChild(thead);
+                
+                // Create body
+                const tbody = document.createElement('tbody');
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    keys.forEach(key => {
+                        const td = document.createElement('td');
+                        td.textContent = row[key];
+                        tr.appendChild(td);
+                    });
+                    tbody.appendChild(tr);
+                });
+                table.appendChild(tbody);
+                
+                container.appendChild(table);
+                return container;
+            },
+            
+            createCards: function(data) {
+                const container = document.createElement('div');
+                container.className = 'mm-card-grid';
+                
+                data.forEach((item, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'mm-card';
+                    
+                    const header = document.createElement('div');
+                    header.className = 'mm-card-header';
+                    header.textContent = item.name || `Item ${index + 1}`;
+                    card.appendChild(header);
+                    
+                    const body = document.createElement('div');
+                    body.className = 'mm-card-body';
+                    
+                    Object.entries(item).forEach(([key, value]) => {
+                        const row = document.createElement('div');
+                        row.className = 'mm-card-row';
+                        
+                        const keySpan = document.createElement('span');
+                        keySpan.className = 'mm-key';
+                        keySpan.textContent = key.charAt(0).toUpperCase() + key.slice(1) + ':';
+                        
+                        const valueSpan = document.createElement('span');
+                        valueSpan.className = 'mm-value';
+                        valueSpan.textContent = value;
+                        
+                        row.appendChild(keySpan);
+                        row.appendChild(valueSpan);
+                        body.appendChild(row);
+                    });
+                    
+                    card.appendChild(body);
+                    container.appendChild(card);
+                });
+                
+                return container;
+            },
+            
+            createControls: function(totalItems, totalPages, startIndex, endIndex, container, data, key, utils) {
+                const paginationDiv = document.createElement('div');
+                paginationDiv.className = 'mm-pagination-container';
+                
+                const controls = document.createElement('div');
+                controls.className = 'mm-pagination-controls';
+                
+                // Info section
+                const info = document.createElement('div');
+                info.className = 'mm-pagination-info';
+                info.textContent = `Showing ${startIndex + 1}-${endIndex} of ${totalItems} items`;
+                
+                // Buttons section
+                const buttonsDiv = document.createElement('div');
+                buttonsDiv.className = 'mm-pagination-buttons';
+                
+                // Previous button
+                const prevBtn = document.createElement('button');
+                prevBtn.className = 'mm-pagination-btn';
+                prevBtn.textContent = '← Previous';
+                prevBtn.disabled = this.currentPage === 1;
+                prevBtn.addEventListener('click', () => {
+                    if (this.currentPage > 1) {
+                        this.currentPage--;
+                        this.renderPage(container, data, key, utils);
+                    }
+                });
+                buttonsDiv.appendChild(prevBtn);
+                
+                // Page numbers
+                for (let i = 1; i <= totalPages; i++) {
+                    const pageBtn = document.createElement('button');
+                    pageBtn.className = 'mm-pagination-btn' + (i === this.currentPage ? ' active' : '');
+                    pageBtn.textContent = i;
+                    pageBtn.addEventListener('click', () => {
+                        this.currentPage = i;
+                        this.renderPage(container, data, key, utils);
+                    });
+                    buttonsDiv.appendChild(pageBtn);
+                }
+                
+                // Next button
+                const nextBtn =

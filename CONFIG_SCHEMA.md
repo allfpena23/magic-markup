@@ -465,6 +465,11 @@ Applies transformations to specific fields.
 - `'uppercase'` - Converts to uppercase
 - `'lowercase'` - Converts to lowercase
 
+**Alignment (Table View Only):**
+- `Align.LEFT` - Left-align text in table cells
+- `Align.CENTER` - Center-align text in table cells
+- `Align.RIGHT` - Right-align text in table cells
+
 ```javascript
 {
     card: {
@@ -492,6 +497,30 @@ Applies transformations to specific fields.
     }
 }
 ```
+
+**Alignment Override Example:**
+```javascript
+{
+    card: {
+        products: {
+            transforms: {
+                productName: Align.LEFT,    // Force left alignment
+                price: Align.RIGHT,         // Force right alignment
+                category: Align.CENTER      // Force center alignment
+            }
+        }
+    }
+}
+```
+
+**Note on Automatic Alignment:**
+By default, Magic Markup automatically aligns table cells based on data type:
+- **Numbers** (integers/floats) → Right-aligned
+- **Strings** → Left-aligned
+- **Booleans** → Center-aligned
+- **Dates** → Center-aligned
+
+Use the `Align` constants in transforms to override this automatic behavior for specific fields.
 
 ---
 
@@ -611,6 +640,13 @@ Called after successful rendering.
 ```javascript
 MagicMarkup.DateFormat.UTC      // 'utc'
 MagicMarkup.DateFormat.LOCALE   // 'locale'
+```
+
+### Align
+```javascript
+MagicMarkup.Align.LEFT    // 'left'
+MagicMarkup.Align.CENTER  // 'center'
+MagicMarkup.Align.RIGHT   // 'right'
 ```
 
 ### Transforms

@@ -10,7 +10,8 @@ const distDir = path.join(__dirname, 'dist');
 const filesToCopy = [
   'magic-markup.js',
   'magic-markup.css',
-  'magic-markup-dark.css'
+  'magic-markup-dark.css',
+  'magic-markup-wrapper.css'
 ];
 
 // Ensure dist directory exists

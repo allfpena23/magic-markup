@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic Markup - Alignment Test</title>
+    <link rel="stylesheet" href="../src/magic-markup.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-info {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-info h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        .test-info ul {
+            line-height: 1.8;
+        }
+        .test-info code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-info">
+        <h2>🎯 Alignment Test</h2>
+        <p>This example demonstrates the automatic and custom alignment features:</p>
+        <ul>
+            <li><strong>Automatic Alignment:</strong>
+                <ul>
+                    <li>Numbers (age, salary, score) → Right-aligned</li>
+                    <li>Strings (name, department, email) → Left-aligned</li>
+                    <li>Booleans (active, verified) → Center-aligned</li>
+                    <li>Dates (joinDate) → Center-aligned</li>
+                </ul>
+            </li>
+            <li><strong>Custom Alignment Override:</strong>
+                <ul>
+                    <li><code>department</code> → Forced to CENTER using <code>Align.CENTER</code></li>
+                    <li><code>email</code> → Forced to RIGHT using <code>Align.RIGHT</code></li>
+                </ul>
+            </li>
+        </ul>
+        <p><em>Switch to Table View to see the alignment in action!</em></p>
+    </div>
+
+    <div id="container"></div>
+
+    <script src="../src/magic-markup.js"></script>
+    <script>
+        // Sample data with various data types
+        const testData = {
+            employees: [
+                {
+                    name: "John Doe",
+                    age: 32,
+                    department: "Engineering",
+                    email: "john.doe@example.com",
+                    salary: 85000,
+                    active: true,
+                    verified: false,
+                    joinDate: "2020-03-15",
+                    score: 92.5
+                },
+                {
+                    name: "Jane Smith",
+                    age: 28,
+                    department: "Marketing",
+                    email: "jane.smith@example.com",
+                    salary: 72000,
+                    active: true,
+                    verified: true,
+                    joinDate: "2021-07-22",
+                    score: 88.3
+                },
+                {
+                    name: "Bob Johnson",
+                    age: 45,
+                    department: "Sales",
+                    email: "bob.johnson@example.com",
+                    salary: 95000,
+                    active: false,
+                    verified: true,
+                    joinDate: "2018-11-08",
+                    score: 95.7
+                },
+                {
+                    name: "Alice Williams",
+                    age: 35,
+                    department: "Engineering",
+                    email: "alice.w@example.com",
+                    salary: 98000,
+                    active: true,
+                    verified: true,
+                    joinDate: "2019-05-12",
+                    score: 97.2
+                },
+                {
+                    name: "Charlie Brown",
+                    age: 29,
+                    department: "HR",
+                    email: "charlie.b@example.com",
+                    salary: 68000,
+                    active: true,
+                    verified: false,
+                    joinDate: "2022-01-30",
+                    score: 85.9
+                }
+            ]
+        };
+
+        // Initialize Magic Markup with alignment configuration
+        const mm = new MagicMarkup('#container', {
+            showHeader: true,
+            showStats: true,
+            defaultView: 'table',
+            card: {
+                employees: {
+                    transforms: {
+                        // Custom alignment overrides
+                        department: MagicMarkup.Align.CENTER,  // Override: center-align department
+                        email: MagicMarkup.Align.RIGHT,        // Override: right-align email
+                        
+                        // Other transforms
+                        joinDate: 'date',
+                        active: 'boolean',
+                        verified: 'boolean'
+                    },
+                    highlights: {
+                        enabled: true,
+                        fields: ['active', 'verified']
+                    }
+                }
+            }
+        });
+
+        // Render the data
+        mm.render(testData);
+    </script>
+</body>
+</html>

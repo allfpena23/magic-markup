@@ -15,7 +15,48 @@
      */
     const DateFormat = {
         UTC: 'utc',
-        LOCALE: 'locale'
+        LOCALE: 'locale',
+        
+        // North America
+        EST: 'America/New_York',        // Eastern Time
+        CST: 'America/Chicago',         // Central Time
+        MST: 'America/Denver',          // Mountain Time
+        PST: 'America/Los_Angeles',     // Pacific Time
+        AKST: 'America/Anchorage',      // Alaska Time
+        HST: 'Pacific/Honolulu',        // Hawaii Time
+        
+        // Europe
+        GMT: 'Europe/London',           // Greenwich Mean Time
+        CET: 'Europe/Paris',            // Central European Time
+        EET: 'Europe/Athens',           // Eastern European Time
+        WET: 'Europe/Lisbon',           // Western European Time
+        
+        // Asia
+        JST: 'Asia/Tokyo',              // Japan Standard Time
+        KST: 'Asia/Seoul',              // Korea Standard Time
+        CST_CHINA: 'Asia/Shanghai',     // China Standard Time
+        IST: 'Asia/Kolkata',            // India Standard Time
+        SGT: 'Asia/Singapore',          // Singapore Time
+        HKT: 'Asia/Hong_Kong',          // Hong Kong Time
+        
+        // Australia
+        AEST: 'Australia/Sydney',       // Australian Eastern Standard Time
+        ACST: 'Australia/Adelaide',     // Australian Central Standard Time
+        AWST: 'Australia/Perth',        // Australian Western Standard Time
+        
+        // Other
+        NZST: 'Pacific/Auckland',       // New Zealand Standard Time
+        BRT: 'America/Sao_Paulo',       // Brazil Time
+        ART: 'America/Argentina/Buenos_Aires'  // Argentina Time
+    };
+
+    /**
+     * Alignment Constants
+     */
+    const Align = {
+        LEFT: 'left',
+        CENTER: 'center',
+        RIGHT: 'right'
     };
 
     /**
@@ -26,7 +67,93 @@
             if (!value) return value;
             const date = new Date(value);
             if (isNaN(date.getTime())) return value;
-            return format === 'utc' ? date.toUTCString() : date.toLocaleString();
+            
+            // Handle UTC format
+            if (format === 'utc') {
+                return date.toUTCString();
+            }
+            
+            // Handle locale format (browser default)
+            if (format === 'locale') {
+                return date.toLocaleString('en-US', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false,
+                    timeZoneName: 'short'
+                });
+            }
+            
+            // Handle timezone format (IANA timezone string)
+            try {
+                // Get the timezone abbreviation by finding the matching DateFormat key
+                let timezoneAbbrev = null;
+                for (const [key, value] of Object.entries(DateFormat)) {
+                    if (value === format && key !== 'UTC' && key !== 'LOCALE') {
+                        timezoneAbbrev = key;
+                        break;
+                    }
+                }
+                
+                // Format the date with timezone
+                const formattedDate = date.toLocaleString('en-US', { 
+                    timeZone: format,
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                });
+                
+                // If we found a matching abbreviation from our DateFormat enum, use it
+                if (timezoneAbbrev) {
+                    return `${formattedDate} ${timezoneAbbrev}`;
+                }
+                
+                // Otherwise, try to extract timezone abbreviation from formatted string with timeZoneName
+                try {
+                    const fullFormat = date.toLocaleString('en-US', {
+                        timeZone: format,
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: false,
+                        timeZoneName: 'short'
+                    });
+                    
+                    // Extract timezone abbreviation from the end of the string
+                    // Format is typically: "MM/DD/YYYY, HH:MM:SS ABBREV"
+                    const parts = fullFormat.split(' ');
+                    const tzName = parts[parts.length - 1];
+                    
+                    // Check if it looks like a timezone abbreviation
+                    if (tzName && /^[A-Z]{2,5}$/.test(tzName)) {
+                        return `${formattedDate} ${tzName}`;
+                    }
+                    
+                    // If not a standard abbreviation, still append it if it's not part of the date
+                    if (tzName && tzName !== parts[1]) {
+                        return `${formattedDate} ${tzName}`;
+                    }
+                }
+                catch (e) {
+                    // Ignore errors getting timezone name
+                }
+                
+                return formattedDate;
+            } catch (error) {
+                // If timezone is invalid, fall back to locale string
+                console.warn(`Invalid timezone '${format}', falling back to locale format`);
+                return date.toLocaleString();
+            }
         },
         bytes: (value) => {
             if (value === null || value === undefined || isNaN(value)) return value;
@@ -567,6 +694,49 @@
         }
 
         /**
+         * Apply text alignment to table cells based on data type
+         */
+        _applyTableCellAlignment(element, value, key, config = {}) {
+            if (value === null || value === undefined) {
+                return;
+            }
+
+            const transforms = config.transforms || {};
+            const transformValue = transforms[key];
+
+            // Check if there's an explicit Align constant specified
+            if (transformValue === Align.LEFT || transformValue === Align.CENTER || transformValue === Align.RIGHT) {
+                element.style.textAlign = transformValue;
+                return;
+            }
+
+            // Check if value is a boolean (original or transformed)
+            if (typeof value === 'boolean' || transformValue === 'boolean') {
+                element.style.textAlign = 'center';
+                return;
+            }
+
+            // Check if value is a date (original or transformed)
+            const isDate = value instanceof Date || 
+                          (typeof value === 'string' && !isNaN(Date.parse(value)) && /^\d{4}-\d{2}-\d{2}/.test(value)) ||
+                          transformValue === 'date';
+            
+            if (isDate) {
+                element.style.textAlign = 'center';
+                return;
+            }
+
+            // Check if value is a number (integer or float)
+            if (typeof value === 'number' || (!isNaN(value) && !isNaN(parseFloat(value)) && typeof value !== 'boolean')) {
+                element.style.textAlign = 'right';
+                return;
+            }
+
+            // Default: strings are left-aligned (browser default, but explicit for clarity)
+            element.style.textAlign = 'left';
+        }
+
+        /**
          * Create button group for primitives
          */
         _createButtonGroup(context) {
@@ -1101,6 +1271,7 @@
                 keys.forEach(key => {
                     const td = document.createElement('td');
                     let value = obj[key];
+                    const originalValue = value; // Store original value for type detection
 
                     // Apply transformation
                     value = this._applyTransform(value, key, keyConfig);
@@ -1116,6 +1287,9 @@
                         if (this._shouldHighlight(key, keyConfig)) {
                             this._applyValueHighlighting(td, value);
                         }
+                        
+                        // Apply text alignment based on data type
+                        this._applyTableCellAlignment(td, originalValue, key, keyConfig);
                     }
 
                     row.appendChild(td);
@@ -1298,6 +1472,11 @@
         _createAccordion(title, content) {
             const section = document.createElement('div');
             section.className = 'mm-accordion-section';
+            
+            // Auto-expand if autoExpand option is enabled
+            if (this.options.autoExpand) {
+                section.classList.add('mm-active');
+            }
 
             const header = document.createElement('div');
             header.className = 'mm-accordion-header';
@@ -1520,12 +1699,14 @@
 
     // Expose constants as static properties
     MagicMarkup.DateFormat = DateFormat;
+    MagicMarkup.Align = Align;
     MagicMarkup.Transforms = Transforms;
 
     // Export for different module systems
     if (typeof module !== 'undefined' && module.exports) {
         module.exports = MagicMarkup;
         module.exports.DateFormat = DateFormat;
+        module.exports.Align = Align;
         module.exports.Transforms = Transforms;
     } else if (typeof define === 'function' && define.amd) {
         define([], function() {
@@ -1535,4 +1716,4 @@
         global.MagicMarkup = MagicMarkup;
     }
 
-})(typeof window !== 'undefined' ? window : this); 
+})(typeof window !== 'undefined' ? window : this);

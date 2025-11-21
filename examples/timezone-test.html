@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic Markup - Timezone Support Test</title>
+    <link rel="stylesheet" href="../src/magic-markup.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .test-section {
+            margin-bottom: 40px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .test-section h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        .test-description {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🌍 DateFormat Timezone Support Test</h1>
+    <p>This page demonstrates the new timezone support in Magic Markup's DateFormat feature.</p>
+
+    <div class="test-section">
+        <h2>Test 1: Using DateFormat.EST (Eastern Time)</h2>
+        <div class="test-description">
+            <strong>Configuration:</strong> <code>dateFormat: MagicMarkup.DateFormat.EST</code>
+        </div>
+        <div id="test-est"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 2: Using DateFormat.PST (Pacific Time)</h2>
+        <div class="test-description">
+            <strong>Configuration:</strong> <code>dateFormat: MagicMarkup.DateFormat.PST</code>
+        </div>
+        <div id="test-pst"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 3: Using DateFormat.JST (Japan Standard Time)</h2>
+        <div class="test-description">
+            <strong>Configuration:</strong> <code>dateFormat: MagicMarkup.DateFormat.JST</code>
+        </div>
+        <div id="test-jst"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 4: Using DateFormat.GMT (Greenwich Mean Time)</h2>
+        <div class="test-description">
+            <strong>Configuration:</strong> <code>dateFormat: MagicMarkup.DateFormat.GMT</code>
+        </div>
+        <div id="test-gmt"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 5: Using Custom IANA Timezone String</h2>
+        <div class="test-description">
+            <strong>Configuration:</strong> <code>dateFormat: 'Australia/Sydney'</code>
+        </div>
+        <div id="test-custom"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 6: Array of Events with Different Timezones</h2>
+        <div class="test-description">
+            <strong>Configuration:</strong> Per-field timezone transforms
+        </div>
+        <div id="test-array"></div>
+    </div>
+
+    <script src="../src/magic-markup.js"></script>
+    <script>
+        // Sample timestamp
+        const sampleTimestamp = '2024-01-15T14:30:00Z';
+
+        // Test data
+        const testData = {
+            timestamp: sampleTimestamp,
+            description: 'Sample event timestamp'
+        };
+
+        // Test 1: EST
+        new MagicMarkup('#test-est', {
+            dateFormat: MagicMarkup.DateFormat.EST,
+            showHeader: false,
+            showStats: false,
+            card: {
+                testData: {
+                    transforms: {
+                        timestamp: 'date'
+                    }
+                }
+            }
+        }).render(testData);
+
+        // Test 2: PST
+        new MagicMarkup('#test-pst', {
+            dateFormat: MagicMarkup.DateFormat.PST,
+            showHeader: false,
+            showStats: false,
+            card: {
+                testData: {
+                    transforms: {
+                        timestamp: 'date'
+                    }
+                }
+            }
+        }).render(testData);
+
+        // Test 3: JST
+        new MagicMarkup('#test-jst', {
+            dateFormat: MagicMarkup.DateFormat.JST,
+            showHeader: false,
+            showStats: false,
+            card: {
+                testData: {
+                    transforms: {
+                        timestamp: 'date'
+                    }
+                }
+            }
+        }).render(testData);
+
+        // Test 4: GMT
+        new MagicMarkup('#test-gmt', {
+            dateFormat: MagicMarkup.DateFormat.GMT,
+            showHeader: false,
+            showStats: false,
+            card: {
+                testData: {
+                    transforms: {
+                        timestamp: 'date'
+                    }
+                }
+            }
+        }).render(testData);
+
+        // Test 5: Custom timezone string
+        new MagicMarkup('#test-custom', {
+            dateFormat: 'Australia/Sydney',
+            showHeader: false,
+            showStats: false,
+            card: {
+                testData: {
+                    transforms: {
+                        timestamp: 'date'
+                    }
+                }
+            }
+        }).render(testData);
+
+        // Test 6: Array of events
+        const eventsData = {
+            events: [
+                {
+                    name: 'New York Meeting',
+                    time: '2024-01-15T09:00:00Z',
+                    timezone: 'EST'
+                },
+                {
+                    name: 'Tokyo Conference',
+                    time: '2024-01-15T01:00:00Z',
+                    timezone: 'JST'
+                },
+                {
+                    name: 'London Presentation',
+                    time: '2024-01-15T14:00:00Z',
+                    timezone: 'GMT'
+                },
+                {
+                    name: 'San Francisco Launch',
+                    time: '2024-01-15T17:00:00Z',
+                    timezone: 'PST'
+                }
+            ]
+        };
+
+        new MagicMarkup('#test-array', {
+            dateFormat: MagicMarkup.DateFormat.EST,
+            showHeader: false,
+            showStats: false,
+            card: {
+                events: {
+                    transforms: {
+                        time: 'date'
+                    }
+                }
+            }
+        }).render(eventsData);
+    </script>
+</body>
+</html>
