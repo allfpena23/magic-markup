@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic Markup - Column Sorting Demo</title>
+    <link rel="stylesheet" href="../src/magic-markup.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+        }
+        .demo-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .demo-header h1 {
+            color: #2563eb;
+            margin-bottom: 10px;
+        }
+        .demo-header p {
+            color: #64748b;
+            font-size: 14px;
+        }
+        .instructions {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .instructions h3 {
+            margin-top: 0;
+            color: #2563eb;
+        }
+        .instructions ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin: 5px 0;
+            color: #475569;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-header">
+        <h1>🔄 Column Sorting Demo</h1>
+        <p>Click on any column header to sort the table</p>
+    </div>
+
+    <div class="instructions">
+        <h3>How to Use Column Sorting:</h3>
+        <ul>
+            <li><strong>Click a column header</strong> to sort by that column in ascending order</li>
+            <li><strong>Click again</strong> to toggle between ascending (▲) and descending (▼) order</li>
+            <li>The sorted column will be <strong>highlighted in blue</strong></li>
+            <li>Sorting works intelligently based on data type:
+                <ul>
+                    <li>Numbers are sorted numerically</li>
+                    <li>Dates are sorted chronologically</li>
+                    <li>Strings are sorted alphabetically (case-insensitive)</li>
+                    <li>Booleans are sorted with true values first</li>
+                </ul>
+            </li>
+            <li>To disable sorting, set <code>sorting: { enabled: false }</code> in the configuration</li>
+        </ul>
+    </div>
+
+    <div id="app"></div>
+
+    <script src="../src/magic-markup.js"></script>
+    <script>
+        // Sample data with various data types for sorting demonstration
+        const sampleData = {
+            employees: [
+                {
+                    id: 1,
+                    name: "Alice Johnson",
+                    department: "Engineering",
+                    salary: 95000,
+                    hireDate: "2020-03-15",
+                    active: true,
+                    performance: 4.5
+                },
+                {
+                    id: 2,
+                    name: "Bob Smith",
+                    department: "Marketing",
+                    salary: 72000,
+                    hireDate: "2021-07-22",
+                    active: true,
+                    performance: 3.8
+                },
+                {
+                    id: 3,
+                    name: "Charlie Brown",
+                    department: "Engineering",
+                    salary: 105000,
+                    hireDate: "2019-01-10",
+                    active: true,
+                    performance: 4.9
+                },
+                {
+                    id: 4,
+                    name: "Diana Prince",
+                    department: "Sales",
+                    salary: 88000,
+                    hireDate: "2020-11-05",
+                    active: false,
+                    performance: 4.2
+                },
+                {
+                    id: 5,
+                    name: "Eve Anderson",
+                    department: "HR",
+                    salary: 68000,
+                    hireDate: "2022-02-14",
+                    active: true,
+                    performance: 3.5
+                },
+                {
+                    id: 6,
+                    name: "Frank Miller",
+                    department: "Engineering",
+                    salary: 98000,
+                    hireDate: "2018-09-30",
+                    active: true,
+                    performance: 4.7
+                },
+                {
+                    id: 7,
+                    name: "Grace Lee",
+                    department: "Marketing",
+                    salary: 75000,
+                    hireDate: "2021-05-18",
+                    active: true,
+                    performance: 4.0
+                },
+                {
+                    id: 8,
+                    name: "Henry Davis",
+                    department: "Sales",
+                    salary: 92000,
+                    hireDate: "2019-12-01",
+                    active: false,
+                    performance: 3.9
+                },
+                {
+                    id: 9,
+                    name: "Iris Wilson",
+                    department: "Engineering",
+                    salary: 110000,
+                    hireDate: "2017-06-20",
+                    active: true,
+                    performance: 5.0
+                },
+                {
+                    id: 10,
+                    name: "Jack Thompson",
+                    department: "HR",
+                    salary: 71000,
+                    hireDate: "2022-08-10",
+                    active: true,
+                    performance: 3.6
+                }
+            ]
+        };
+
+        // Initialize Magic Markup with configuration
+        const mm = new MagicMarkup('#app', {
+            showHeader: false,
+            showStats: true,
+            autoExpand: true,
+            card: {
+                employees: {
+                    header: 'name',
+                    transforms: {
+                        hireDate: 'date',
+                        active: 'boolean'
+                    },
+                    // Sorting is enabled by default, but you can configure it:
+                    sorting: {
+                        enabled: true  // Set to false to disable sorting
+                    }
+                }
+            }
+        });
+
+        // Render the data
+        mm.render(sampleData);
+    </script>
+</body>
+</html>

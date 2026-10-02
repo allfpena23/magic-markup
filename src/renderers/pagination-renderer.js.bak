@@ -33,33 +33,10 @@
             showSearch: true, // Enable/disable search
             searchPlaceholder: 'Search...', // Placeholder text
             searchFields: null, // null = all fields, or array of field names
-            caseSensitive: false, // Case-insensitive by default
-            links: {
-                enabled: false // Enable/disable auto-link conversion
-            }
+            caseSensitive: false // Case-insensitive by default
         };
         
         const settings = { ...defaults, ...config };
-        
-        /**
-         * Converts URLs in text to clickable links 
-         * @param {*} value - The value to process
-         * @returns {string} HTML string with links
-         */
-        function convertUrlsToLinks(value) {
-            if (value === null || value === undefined) return '';
-            const text = String(value);
-            
-            if (!settings.links.enabled) {
-                return text;
-            }
-            
-            // Regex to match URLs
-            const urlRegex = /(https?:\/\/[^\s<>"]+)/g;
-            return text.replace(urlRegex, (url) => {
-                return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="mm-auto-link">${url}</a>`;
-            });
-        }
         
         return {
             currentPage: 1,
@@ -70,10 +47,6 @@
             searchTerm: '',
             filteredData: null,
             searchDebounceTimer: null,
-            sortState: {
-                column: null,
-                direction: 'asc'
-            },
             
             render: function(key, data, label, utils) {
                 const container = document.createElement('div');
@@ -276,156 +249,29 @@
                 
                 const keys = Object.keys(data[0]);
                 
-                // Check if buttons are configured
-                const hasButtons = settings.cardConfig.buttons && settings.cardConfig.buttons.length > 0;
-                
-                // Check if sorting utilities are available
-                const sortingEnabled = typeof utils.sortTableData === 'function';
-                
-                // Store reference to current data for sorting
-                let currentData = [...data];
-                
-                // Function to render table body
-                const renderTableBody = (sortedData) => {
-                    const tbody = table.querySelector('tbody');
-                    if (tbody) {
-                        tbody.remove();
-                    }
-                    
-                    const newTbody = document.createElement('tbody');
-                    sortedData.forEach(row => {
-                        const tr = document.createElement('tr');
-                        keys.forEach(k => {
-                            const td = document.createElement('td');
-                            const value = row[k];
-                            
-                            // Apply link conversion if enabled
-                            if (settings.links.enabled) {
-                                td.innerHTML = convertUrlsToLinks(value);
-                            } else {
-                                td.textContent = value === null || value === undefined ? '' : value;
-                            }
-                            
-                            utils.applyValueHighlighting(td, value);
-                            
-                            // Apply alignment if available
-                            if (typeof utils.applyTableCellAlignment === 'function') {
-                                utils.applyTableCellAlignment(td, value, k, {});
-                            }
-                            
-                            tr.appendChild(td);
-                        });
-                        
-                        // Add actions column with buttons
-                        if (hasButtons) {
-                            const actionsCell = document.createElement('td');
-                            actionsCell.className = 'mm-actions-column';
-                            
-                            const buttonContainer = document.createElement('div');
-                            buttonContainer.className = 'mm-action-buttons';
-                            
-                            settings.cardConfig.buttons.forEach(btnConfig => {
-                                const button = document.createElement('button');
-                                button.className = `mm-action-btn-small ${btnConfig.className || 'mm-btn-primary'}`;
-                                
-                                const buttonText = btnConfig.name || btnConfig.label || 'Action';
-                                button.textContent = btnConfig.icon ? `${btnConfig.icon} ${buttonText}` : buttonText;
-                                
-                                const clickHandler = btnConfig.handler || btnConfig.onClick;
-                                if (clickHandler) {
-                                    button.addEventListener('click', (e) => {
-                                        e.stopPropagation();
-                                        clickHandler(row, button);
-                                    });
-                                }
-                                
-                                buttonContainer.appendChild(button);
-                            });
-                            
-                            actionsCell.appendChild(buttonContainer);
-                            tr.appendChild(actionsCell);
-                        }
-                        
-                        newTbody.appendChild(tr);
-                    });
-                    table.appendChild(newTbody);
-                };
-                
-                // Function to update sort indicators
-                const updateSortIndicators = () => {
-                    const headers = thead.querySelectorAll('th');
-                    headers.forEach((th, index) => {
-                        if (index < keys.length) {
-                            const indicator = th.querySelector('.mm-sort-indicator');
-                            if (indicator) {
-                                if (keys[index] === this.sortState.column) {
-                                    indicator.textContent = this.sortState.direction === 'asc' ? ' ▲' : ' ▼';
-                                    indicator.style.opacity = '1';
-                                    th.classList.add('mm-sorted');
-                                } else {
-                                    indicator.textContent = ' ▼';
-                                    indicator.style.opacity = '0.3';
-                                    th.classList.remove('mm-sorted');
-                                }
-                            }
-                        }
-                    });
-                };
-                
-                // Create header
                 const thead = document.createElement('thead');
                 const headerRow = document.createElement('tr');
-                keys.forEach((k, index) => {
+                keys.forEach(k => {
                     const th = document.createElement('th');
                     th.textContent = utils.formatLabel(k);
-                    
-                    if (sortingEnabled) {
-                        th.classList.add('mm-sortable');
-                        
-                        // Add sort indicator
-                        const indicator = document.createElement('span');
-                        indicator.className = 'mm-sort-indicator';
-                        indicator.textContent = ' ▼';
-                        indicator.style.opacity = '0.3';
-                        th.appendChild(indicator);
-                        
-                        // Add click handler for sorting
-                        th.addEventListener('click', () => {
-                            // Toggle direction if same column, otherwise set to ascending
-                            if (this.sortState.column === k) {
-                                this.sortState.direction = this.sortState.direction === 'asc' ? 'desc' : 'asc';
-                            } else {
-                                this.sortState.column = k;
-                                this.sortState.direction = 'asc';
-                            }
-                            
-                            // Sort the data using magic-markup's sorting logic
-                            currentData = utils.sortTableData(currentData, k, this.sortState.direction, {});
-                            
-                            // Re-render table body
-                            renderTableBody(currentData);
-                            
-                            // Update sort indicators
-                            updateSortIndicators();
-                        });
-                    }
-                    
                     headerRow.appendChild(th);
                 });
-                
-                // Add actions column header if buttons configured
-                if (hasButtons) {
-                    const actionsHeader = document.createElement('th');
-                    actionsHeader.textContent = 'Actions';
-                    actionsHeader.className = 'mm-actions-column';
-                    headerRow.appendChild(actionsHeader);
-                }
-                
                 thead.appendChild(headerRow);
                 table.appendChild(thead);
                 
-                // Initial render of table body
-                renderTableBody(currentData);
+                const tbody = document.createElement('tbody');
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    keys.forEach(k => {
+                        const td = document.createElement('td');
+                        const value = row[k];
+                        td.textContent = value === null || value === undefined ? '' : value;
+                        utils.applyValueHighlighting(td, value);
+                        tr.appendChild(td);
+                    });
+                    tbody.appendChild(tr);
+                });
+                table.appendChild(tbody);
                 
                 container.appendChild(table);
                 return container;
@@ -489,14 +335,7 @@
                         
                         const valueSpan = document.createElement('span');
                         valueSpan.className = 'mm-value';
-                        
-                        // Apply link conversion if enabled
-                        if (settings.links.enabled) {
-                            valueSpan.innerHTML = convertUrlsToLinks(value);
-                        } else {
-                            valueSpan.textContent = value === null || value === undefined ? '' : value;
-                        }
-                        
+                        valueSpan.textContent = value === null || value === undefined ? '' : value;
                         utils.applyValueHighlighting(valueSpan, value);
                         
                         row.appendChild(keySpan);

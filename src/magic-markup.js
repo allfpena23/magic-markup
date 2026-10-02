@@ -1146,7 +1146,9 @@
                 getKeyConfig: this._getKeyConfig.bind(this),
                 filterFields: this._filterFields.bind(this),
                 applyTransform: this._applyTransform.bind(this),
-                shouldHighlight: this._shouldHighlight.bind(this)
+                shouldHighlight: this._shouldHighlight.bind(this),
+                sortTableData: this._sortTableData.bind(this),
+                applyTableCellAlignment: this._applyTableCellAlignment.bind(this)
             };
         }
 
@@ -1243,12 +1245,136 @@
                 }
             }
 
+            // Sorting state
+            let sortState = {
+                column: null,
+                direction: 'asc',
+                data: [...data] // Clone the data array
+            };
+
+            // Check if sorting is enabled (default: true)
+            const sortingConfig = keyConfig.sorting !== undefined ? keyConfig.sorting : { enabled: true };
+            const sortingEnabled = sortingConfig.enabled !== false;
+
+            // Function to render table body
+            const renderTableBody = (sortedData) => {
+                const tbody = table.querySelector('tbody');
+                if (tbody) {
+                    tbody.remove();
+                }
+
+                const newTbody = document.createElement('tbody');
+                sortedData.forEach(obj => {
+                    const row = document.createElement('tr');
+                    keys.forEach(key => {
+                        const td = document.createElement('td');
+                        let value = obj[key];
+                        const originalValue = value; // Store original value for type detection
+
+                        // Apply transformation
+                        value = this._applyTransform(value, key, keyConfig);
+
+                        if (Array.isArray(value)) {
+                            td.textContent = `[${value.length} items]`;
+                        } else if (typeof value === 'object' && value !== null) {
+                            td.textContent = JSON.stringify(value);
+                        } else {
+                            td.textContent = value === null || value === undefined ? '' : value;
+                            
+                            // Apply highlighting if enabled for this field
+                            if (this._shouldHighlight(key, keyConfig)) {
+                                this._applyValueHighlighting(td, value);
+                            }
+                            
+                            // Apply text alignment based on data type
+                            this._applyTableCellAlignment(td, originalValue, key, keyConfig);
+                        }
+
+                        row.appendChild(td);
+                    });
+
+                    // Add actions column
+                    if (hasButtons) {
+                        const actionsCell = document.createElement('td');
+                        actionsCell.className = 'mm-actions-column';
+                        
+                        // Use per-key buttons if available, otherwise use global buttons
+                        const buttons = (keyConfig.buttons && keyConfig.buttons.length > 0) 
+                            ? keyConfig.buttons 
+                            : this.options.buttons;
+                        
+                        if (buttons.length > 0) {
+                            const actionButtons = this._createActionButtonsForKey(obj, buttons);
+                            actionsCell.appendChild(actionButtons);
+                        }
+                        
+                        row.appendChild(actionsCell);
+                    }
+
+                    newTbody.appendChild(row);
+                });
+                table.appendChild(newTbody);
+            };
+
+            // Function to update sort indicators
+            const updateSortIndicators = () => {
+                const headers = thead.querySelectorAll('th');
+                headers.forEach((th, index) => {
+                    if (index < keys.length) { // Don't process actions column
+                        const indicator = th.querySelector('.mm-sort-indicator');
+                        if (indicator) {
+                            if (keys[index] === sortState.column) {
+                                indicator.textContent = sortState.direction === 'asc' ? ' ▲' : ' ▼';
+                                indicator.style.opacity = '1';
+                                th.classList.add('mm-sorted');
+                            } else {
+                                indicator.textContent = ' ▼';
+                                indicator.style.opacity = '0.3';
+                                th.classList.remove('mm-sorted');
+                            }
+                        }
+                    }
+                });
+            };
+
             // Create header
             const thead = document.createElement('thead');
             const headerRow = document.createElement('tr');
-            keys.forEach(key => {
+            keys.forEach((key, index) => {
                 const th = document.createElement('th');
                 th.textContent = this._formatLabel(key);
+                
+                if (sortingEnabled) {
+                    th.classList.add('mm-sortable');
+                    
+                    // Add sort indicator
+                    const indicator = document.createElement('span');
+                    indicator.className = 'mm-sort-indicator';
+                    indicator.textContent = ' ▼';
+                    indicator.style.opacity = '0.3';
+                    th.appendChild(indicator);
+                    
+                    // Add click handler for sorting
+                    th.addEventListener('click', () => {
+                        // Toggle direction if same column, otherwise set to ascending
+                        if (sortState.column === key) {
+                            sortState.direction = sortState.direction === 'asc' ? 'desc' : 'asc';
+                        } else {
+                            sortState.column = key;
+                            sortState.direction = 'asc';
+                        }
+                        
+                        // Sort the data
+                        sortState.data = this._sortTableData(sortState.data, key, sortState.direction, keyConfig);
+                        
+                        // Re-render table body
+                        renderTableBody(sortState.data);
+                        
+                        // Update sort indicators
+                        updateSortIndicators();
+                    });
+                }
+                
                 headerRow.appendChild(th);
             });
 
@@ -1264,61 +1390,85 @@
             thead.appendChild(headerRow);
             table.appendChild(thead);
 
-            // Create body
-            const tbody = document.createElement('tbody');
-            data.forEach(obj => {
-                const row = document.createElement('tr');
-                keys.forEach(key => {
-                    const td = document.createElement('td');
-                    let value = obj[key];
-                    const originalValue = value; // Store original value for type detection
-
-                    // Apply transformation
-                    value = this._applyTransform(value, key, keyConfig);
-
-                    if (Array.isArray(value)) {
-                        td.textContent = `[${value.length} items]`;
-                    } else if (typeof value === 'object' && value !== null) {
-                        td.textContent = JSON.stringify(value);
-                    } else {
-                        td.textContent = value === null || value === undefined ? '' : value;
-                        
-                        // Apply highlighting if enabled for this field
-                        if (this._shouldHighlight(key, keyConfig)) {
-                            this._applyValueHighlighting(td, value);
-                        }
-                        
-                        // Apply text alignment based on data type
-                        this._applyTableCellAlignment(td, originalValue, key, keyConfig);
-                    }
-
-                    row.appendChild(td);
-                });
-
-                // Add actions column
-                if (hasButtons) {
-                    const actionsCell = document.createElement('td');
-                    actionsCell.className = 'mm-actions-column';
-                    
-                    // Use per-key buttons if available, otherwise use global buttons
-                    const buttons = (keyConfig.buttons && keyConfig.buttons.length > 0) 
-                        ? keyConfig.buttons 
-                        : this.options.buttons;
-                    
-                    if (buttons.length > 0) {
-                        const actionButtons = this._createActionButtonsForKey(obj, buttons);
-                        actionsCell.appendChild(actionButtons);
-                    }
-                    
-                    row.appendChild(actionsCell);
-                }
-
-                tbody.appendChild(row);
-            });
-            table.appendChild(tbody);
+            // Initial render of table body
+            renderTableBody(sortState.data);
 
             container.appendChild(table);
             return container;
+        }
+
+        /**
+         * Sort table data by column
+         */
+        _sortTableData(data, column, direction, keyConfig = {}) {
+            const sorted = [...data].sort((a, b) => {
+                let aVal = a[column];
+                let bVal = b[column];
+                
+                // Apply transformations to get display values
+                aVal = this._applyTransform(aVal, column, keyConfig);
+                bVal = this._applyTransform(bVal, column, keyConfig);
+                
+                // Handle null/undefined - always sort to bottom
+                if (aVal === null || aVal === undefined) return 1;
+                if (bVal === null || bVal === undefined) return -1;
+                
+                // Detect data type and sort accordingly
+                const aType = typeof aVal;
+                const bType = typeof bVal;
+                
+                // If types differ, sort by type name
+                if (aType !== bType) {
+                    return aType.localeCompare(bType);
+                }
+                
+                // Boolean comparison
+                if (aType === 'boolean') {
+                    const result = (aVal === bVal) ? 0 : aVal ? -1 : 1;
+                    return direction === 'asc' ? result : -result;
+                }
+                
+                // Number comparison
+                if (aType === 'number') {
+                    const result = aVal - bVal;
+                    return direction === 'asc' ? result : -result;
+                }
+                
+                // Date comparison (check if string looks like a date)
+                if (aType === 'string') {
+                    const aDate = new Date(aVal);
+                    const bDate = new Date(bVal);
+                    
+                    if (!isNaN(aDate.getTime()) && !isNaN(bDate.getTime())) {
+                        const result = aDate.getTime() - bDate.getTime();
+                        return direction === 'asc' ? result : -result;
+                    }
+                    
+                    // String comparison (case-insensitive)
+                    const result = String(aVal).toLowerCase().localeCompare(String(bVal).toLowerCase());
+                    return direction === 'asc' ? result : -result;
+                }
+                
+                // Array comparison (by length)
+                if (Array.isArray(aVal) && Array.isArray(bVal)) {
+                    const result = aVal.length - bVal.length;
+                    return direction === 'asc' ? result : -result;
+                }
+                
+                // Object comparison (convert to JSON string)
+                if (aType === 'object') {
+                    const aStr = JSON.stringify(aVal);
+                    const bStr = JSON.stringify(bVal);
+                    const result = aStr.localeCompare(bStr);
+                    return direction === 'asc' ? result : -result;
+                }
+                
+                // Default: convert to string and compare
+                const result = String(aVal).localeCompare(String(bVal));
+                return direction === 'asc' ? result : -result;
+            });
+            
+            return sorted;
         }
 
         /**

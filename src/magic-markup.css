@@ -546,6 +546,42 @@
     background: var(--mm-bg-secondary);
 }
 
+/* Sortable table headers */
+.mm-data-table th.mm-sortable {
+    cursor: pointer !important;
+    user-select: none;
+    transition: all var(--mm-transition);
+    position: relative;
+}
+
+.mm-data-table th.mm-sortable:hover {
+    background: var(--mm-bg-hover);
+    color: var(--mm-primary-color);
+    cursor: pointer !important;
+}
+
+.mm-data-table th.mm-sortable:active {
+    background: var(--mm-bg-tertiary);
+}
+
+.mm-data-table th.mm-sorted {
+    background: #dbeafe;
+    color: var(--mm-primary-color);
+    font-weight: 700;
+}
+
+.mm-sort-indicator {
+    display: inline-block;
+    margin-left: var(--mm-spacing-xs);
+    font-size: 0.625rem;
+    transition: all var(--mm-transition);
+    color: var(--mm-text-muted);
+}
+
+.mm-data-table th.mm-sorted .mm-sort-indicator {
+    color: var(--mm-primary-color);
+}
+
 /* ============================================
    View Toggle
    ============================================ */

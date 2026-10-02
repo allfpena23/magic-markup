@@ -1,6 +1,17 @@
 /**
- * Magic Markup - Styles
+ * Magic Markup - Styles (Font-Size Inheritance Version)
  * Version: 1.0.0
+ * 
+ * This version inherits font-sizes from your existing CSS while keeping
+ * all Magic Markup colors, spacing, and styling intact.
+ * 
+ * Perfect for projects with custom font-size settings (e.g., html { font-size: 52%; })
+ * 
+ * Usage: Replace magic-markup.css with this file
+ * <link rel="stylesheet" href="magic-markup-inherit.css">
+ * 
+ * All font-size declarations have been changed to "inherit" (marked with /* MODIFIED */)
+ * 
  * Scoped with .mm- prefix to avoid conflicts
  */
 
@@ -54,7 +65,7 @@
     color: var(--mm-text-primary);
     background-color: var(--mm-bg-secondary);
     line-height: 1.4;
-    font-size: 12px;
+    font-size: inherit; /* MODIFIED */
     max-width: 1400px;
     margin: 0 auto;
     padding: var(--mm-spacing-lg) var(--mm-spacing-md);
@@ -71,14 +82,14 @@
 }
 
 .mm-header h1 {
-    font-size: 1.75rem;
+    font-size: inherit; /* MODIFIED */
     font-weight: 700;
     color: var(--mm-primary-color);
     margin: 0 0 var(--mm-spacing-xs) 0;
 }
 
 .mm-subtitle {
-    font-size: 0.875rem;
+    font-size: inherit; /* MODIFIED */
     color: var(--mm-text-secondary);
     font-weight: 400;
     margin: 0;
@@ -106,13 +117,13 @@
 }
 
 .mm-stat-label {
-    font-size: 0.75rem;
+    font-size: inherit; /* MODIFIED */
     color: var(--mm-text-secondary);
     font-weight: 500;
 }
 
 .mm-stat-value {
-    font-size: 1rem;
+    font-size: inherit; /* MODIFIED */
     font-weight: 700;
     color: var(--mm-primary-color);
 }
@@ -161,7 +172,7 @@
 }
 
 .mm-key-value-pair .mm-key {
-    font-size: 0.8125rem;
+    font-size: inherit; /* MODIFIED */
     font-weight: 600;
     color: var(--mm-text-secondary);
     min-width: 180px;
@@ -169,7 +180,7 @@
 }
 
 .mm-key-value-pair .mm-value {
-    font-size: 0.8125rem;
+    font-size: inherit; /* MODIFIED */
     font-family: var(--mm-font-mono);
     color: var(--mm-text-primary);
     word-break: break-word;
@@ -193,7 +204,7 @@
     padding: var(--mm-spacing-md) var(--mm-spacing-xl);
     border: 1px solid transparent;
     border-radius: var(--mm-radius-md);
-    font-size: 0.875rem;
+    font-size: inherit; /* MODIFIED */
     font-weight: 600;
     cursor: pointer;
     transition: all var(--mm-transition);
@@ -281,7 +292,7 @@
     padding: var(--mm-spacing-xs) var(--mm-spacing-sm);
     border: 1px solid transparent;
     border-radius: var(--mm-radius-sm);
-    font-size: 0.6875rem;
+    font-size: inherit; /* MODIFIED */
     font-weight: 500;
     cursor: pointer;
     transition: all var(--mm-transition);
@@ -346,7 +357,7 @@
 }
 
 .mm-accordion-title {
-    font-size: 0.9375rem;
+    font-size: inherit; /* MODIFIED */
     font-weight: 600;
     color: var(--mm-text-primary);
 }
@@ -356,7 +367,7 @@
 }
 
 .mm-accordion-icon {
-    font-size: 0.875rem;
+    font-size: inherit; /* MODIFIED */
     color: var(--mm-text-secondary);
     transition: all var(--mm-transition);
 }
@@ -394,7 +405,7 @@
 }
 
 .mm-card-header {
-    font-size: 0.875rem;
+    font-size: inherit; /* MODIFIED */
     font-weight: 600;
     color: var(--mm-primary-color);
     margin-bottom: var(--mm-spacing-sm);
@@ -404,7 +415,7 @@
 }
 
 .mm-card-body {
-    font-size: 0.8125rem;
+    font-size: inherit; /* MODIFIED */
 }
 
 .mm-card-row {
@@ -450,7 +461,7 @@
     font-weight: 600;
     color: var(--mm-primary-color);
     margin-bottom: var(--mm-spacing-sm);
-    font-size: 0.8125rem;
+    font-size: inherit; /* MODIFIED */
     padding: var(--mm-spacing-xs) var(--mm-spacing-sm);
     background: var(--mm-bg-tertiary);
     border-radius: var(--mm-radius-sm);
@@ -464,7 +475,7 @@
 /* Folder icon for nested headers - To remove, comment out the ::before block below */
 .mm-nested-header::before {
     content: '📁';
-    font-size: 0.875rem;
+    font-size: inherit; /* MODIFIED */
     /* To remove folder icon, comment out the line above */
 }
 
@@ -492,7 +503,7 @@
     left: 0;
     color: var(--mm-text-muted);
     font-family: var(--mm-font-mono);
-    font-size: 0.75rem;
+    font-size: inherit; /* MODIFIED */
 }
 
 .mm-nested-object .mm-card-row:last-child::before {
@@ -520,7 +531,7 @@
 .mm-data-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.75rem;
+    font-size: inherit; /* MODIFIED */
 }
 
 .mm-data-table thead {
@@ -546,42 +557,6 @@
     background: var(--mm-bg-secondary);
 }
 
-/* Sortable table headers */
-.mm-data-table th.mm-sortable {
-    cursor: pointer !important;
-    user-select: none;
-    transition: all var(--mm-transition);
-    position: relative;
-}
-
-.mm-data-table th.mm-sortable:hover {
-    background: var(--mm-bg-hover);
-    color: var(--mm-primary-color);
-    cursor: pointer !important;
-}
-
-.mm-data-table th.mm-sortable:active {
-    background: var(--mm-bg-tertiary);
-}
-
-.mm-data-table th.mm-sorted {
-    background: #dbeafe;
-    color: var(--mm-primary-color);
-    font-weight: 700;
-}
-
-.mm-sort-indicator {
-    display: inline-block;
-    margin-left: var(--mm-spacing-xs);
-    font-size: 0.625rem;
-    transition: all var(--mm-transition);
-    color: var(--mm-text-muted);
-}
-
-.mm-data-table th.mm-sorted .mm-sort-indicator {
-    color: var(--mm-primary-color);
-}
-
 /* ============================================
    View Toggle
    ============================================ */
@@ -597,7 +572,7 @@
     border: 1px solid var(--mm-border-color);
     border-radius: var(--mm-radius-sm);
     cursor: pointer;
-    font-size: 0.75rem;
+    font-size: inherit; /* MODIFIED */
     font-weight: 500;
     color: var(--mm-text-secondary);
     transition: all var(--mm-transition);
@@ -627,7 +602,7 @@
     background: var(--mm-bg-tertiary);
     border: 1px solid var(--mm-border-color);
     border-radius: var(--mm-radius-sm);
-    font-size: 0.8125rem;
+    font-size: inherit; /* MODIFIED */
     font-family: var(--mm-font-mono);
     color: var(--mm-text-primary);
 }
@@ -643,7 +618,7 @@
     background: var(--mm-primary-color);
     color: white;
     border-radius: var(--mm-radius-sm);
-    font-size: 0.75rem;
+    font-size: inherit; /* MODIFIED */
     font-weight: 500;
     white-space: nowrap;
 }
@@ -680,7 +655,7 @@
     font-weight: 600 !important;
     display: inline-block !important;
     text-transform: uppercase !important;
-    font-size: 0.75rem !important;
+    font-size: inherit; /* MODIFIED */
     letter-spacing: 0.5px !important;
 }
 
@@ -692,7 +667,7 @@
     font-weight: 600 !important;
     display: inline-block !important;
     text-transform: uppercase !important;
-    font-size: 0.75rem !important;
+    font-size: inherit; /* MODIFIED */
     letter-spacing: 0.5px !important;
 }
 
@@ -704,7 +679,7 @@
     font-weight: 600 !important;
     display: inline-block !important;
     text-transform: uppercase !important;
-    font-size: 0.75rem !important;
+    font-size: inherit; /* MODIFIED */
     letter-spacing: 0.5px !important;
 }
 
@@ -716,7 +691,7 @@
     font-weight: 600 !important;
     display: inline-block !important;
     text-transform: uppercase !important;
-    font-size: 0.75rem !important;
+    font-size: inherit; /* MODIFIED */
     letter-spacing: 0.5px !important;
 }
 
@@ -749,13 +724,13 @@
 
 .mm-error h3 {
     color: var(--mm-error-color);
-    font-size: 1.25rem;
+    font-size: inherit; /* MODIFIED */
     margin-bottom: var(--mm-spacing-sm);
 }
 
 .mm-error p {
     color: #991b1b;
-    font-size: 0.875rem;
+    font-size: inherit; /* MODIFIED */
 }
 
 /* ============================================
@@ -767,11 +742,11 @@
     }
     
     .mm-header h1 {
-        font-size: 1.5rem;
+        font-size: inherit; /* MODIFIED */
     }
     
     .mm-subtitle {
-        font-size: 0.75rem;
+        font-size: inherit; /* MODIFIED */
     }
     
     .mm-stats {
@@ -812,7 +787,7 @@
 
 @media (max-width: 480px) {
     .mm-header h1 {
-        font-size: 1.25rem;
+        font-size: inherit; /* MODIFIED */
     }
     
     .mm-data-container {
@@ -821,6 +796,6 @@
     
     .mm-key-value-pair .mm-key,
     .mm-key-value-pair .mm-value {
-        font-size: 0.75rem;
+        font-size: inherit; /* MODIFIED */
     }
 }
